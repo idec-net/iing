@@ -165,7 +165,8 @@ def subscription():
     if request.forms.get("default"):
         subscription = []
         for ea in api.echoareas:
-            subscription.append(ea[0])
+            if echo_filter(ea[0]):
+                subscription.append(ea[0])
         response.set_cookie("subscription", subscription, path="/", max_age=180*24*60*60, secret='some-secret-key')
         redirect("/")
     if s:
