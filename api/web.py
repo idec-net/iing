@@ -162,16 +162,17 @@ def save_messsage(echoarea, msgid = False):
 def subscription():
     api.load_config()
     s = request.forms.get("subscription")
+    subscription = []
     if request.forms.get("default"):
-        subscription = []
         for ea in api.echoareas:
-            if echo_filter(ea[0]):
-                subscription.append(ea[0])
+            subscription.append(ea[0])
         response.set_cookie("subscription", subscription, path="/", max_age=180*24*60*60, secret='some-secret-key')
         redirect("/")
     if s:
-        s = s.strip().replace("\r", "").split("\n")
-        response.set_cookie("subscription", s, path="/", max_age=180*24*60*60, secret='some-secret-key')
+        for ea in s.strip().replace("\r", "").split("\n"):
+            if api.echo_filter(ea):
+                subscription.append(ea)
+        response.set_cookie("subscription", subscription, path="/", max_age=180*24*60*60, secret='some-secret-key')
         redirect("/")
     subscription = request.get_cookie("subscription", secret='some-secret-key')
     echoareas = []
