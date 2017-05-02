@@ -320,10 +320,18 @@ def features():
     response.set_header("content-type", "text/plain; charset=utf-8")
     return "u/e\nlist.txt\nblacklist.txt\nx/file\nx/small-echolist\nx/caesium\nx/c"
 
+@route("/robots.txt")
+def robots():
+    response.set_header("content-type", "text/plain; charset=utf-8")
+    if api.norobots:
+        return "User-agent: *\nDisallow: /"
+    else:
+        return "User-agent: *\nAllow: /"
+
 api.init()
 api.load_config()
 
 if api.web_interface:
     from api.web import *
 
-run(host="0.0.0.0", port=3000)
+run(host="0.0.0.0", port=3000, quiet=True)

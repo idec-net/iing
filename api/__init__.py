@@ -1,10 +1,13 @@
-import os, re, time, math, codecs, base64, hashlib
+import os, re, time, math, codecs, base64, hashlib, sqlite3
+
+con = sqlite3.connect("iing.db")
+c = con.cursor()
 
 def init():
-    if not os.path.exists("echo"):
-        os.makedirs("echo")
-    if not os.path.exists("msg"):
-        os.makedirs("msg")
+#    if not os.path.exists("echo"):
+#        os.makedirs("echo")
+#    if not os.path.exists("msg"):
+#        os.makedirs("msg")
     if not os.path.exists("files"):
         os.makedirs("files")
     if not os.path.exists("blacklist.txt"):
@@ -20,13 +23,14 @@ def init():
         open("points.txt", "w")
 
 def load_config():
-    global nodename, nodedsc, echoareas, shortareas, web_interface, background
+    global nodename, nodedsc, echoareas, shortareas, web_interface, background, norobots
     nodename = ""
     nodedsc = ""
     background = ""
     echoareas = []
     shortareas = []
     web_interface = True
+    norobots = False
 
     cfg = codecs.open("iing.cfg", "r", "utf8").read().split("\n")
     for line in cfg:
@@ -44,6 +48,8 @@ def load_config():
                 web_interface = False
         elif param[0] == "background":
             background = param[1]
+        elif param[0] == "norobots":
+            norobots = True
 
 def get_echoarea(echoarea):
     try:
