@@ -16,6 +16,7 @@ html, body {
     color: #dddddd;
     margin: 0;
     text-align: left;
+    height: 40pt;
 }
 
 #panel h3 {
@@ -53,6 +54,10 @@ html, body {
     color: #FFFFFF;
 }
 
+#echolist-button {
+    display: none;
+}
+
 #content {
     margin: 15px 0;
 }
@@ -71,6 +76,11 @@ html, body {
 
 a {
     color: #008cba;
+}
+
+.url {
+    display: inline-block;
+    word-break: break-all;
 }
 
 .echo-title {
@@ -139,10 +149,19 @@ hr {
     padding-right: 20px;
 }
 
-#conferences {
+#conferences, #subscriptions {
     background-color: rgba(255, 255, 255, 0.6);
     padding: 5px 10px;
     border: 1px solid #585858;
+}
+
+#subscriptions {
+    width: 90%;
+}
+
+#sform {
+    display: inline-block;
+    width: 50%;
 }
 
 .new-button-link {
@@ -316,6 +335,9 @@ textarea {
 }
 
 #echolist {
+    display: inline-table;
+    float: right;
+    width: 50%;
     border-top: 1px solid #585858;
     border-left: 1px solid #585858;
 }
@@ -327,7 +349,8 @@ textarea {
 }
 
 .login {
-    width: 500px;
+    width: 80%;
+    max-width: 500px;
 }
 
 .page {
@@ -347,4 +370,31 @@ textarea {
 .alarm {
     color: #ec5840;
     font-weight: bold;
+}
+
+@media all and (max-width: 600px) {
+    .caption {
+	display: none;
+    }
+    #side-menu {
+	display: none;
+    }
+    #echolist-button {
+	display: inline-block;
+    }
+    #content {
+	min-width: 320px;
+	max-width: 580px;
+    }
+    .new-button-link {
+	width: 80%;
+    }
+    #sform, #echolist {
+	float: none;
+	width: 100%;
+    }
+    .login {
+	min-width: 150px;
+	max-width: 350px;
+    }
 }

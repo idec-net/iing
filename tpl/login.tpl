@@ -2,7 +2,7 @@
 
 <div id="panel">
 <div id="buttons">
-<a href="/" class="button"><i class="fa fa-home"></i> Главная</a>
+<a href="/" class="button"><i class="fa fa-home"></i><span class="caption"> Главная</span></a>
 </div>
 <h3>Авторизация</h3>
 </div><br>

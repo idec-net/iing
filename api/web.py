@@ -43,6 +43,45 @@ def index():
     msgfrom, addr = points.check_point(auth)
     return template("tpl/index.tpl", nodename=api.nodename, dsc=api.nodedsc, echoareas=echoareas, allechoareas=allechoareas, addr=addr, auth=auth, background=api.background)
 
+@route("/echolist")
+def echolist():
+    api.load_config()
+    echoareas = []
+    s = request.get_cookie("subscription", secret='some-secret-key')
+    if not s:
+        subscription = []
+        for ea in api.echoareas:
+            subscription.append(ea[0])
+        response.set_cookie("subscription", subscription, path="/", max_age=180*24*60*60, secret='some-secret-key')
+        s = subscription
+    subscription = []
+    for ea in s:
+        flag = False
+        for e in api.echoareas:
+            if ea in e:
+                flag = True
+                subscription.append(e)
+        if not flag:
+            subscription.append([ea, ""])
+    allechoareas = []
+    for echoarea in subscription:
+        temp = echoarea
+        if not request.get_cookie(echoarea[0]):
+            response.set_cookie(echoarea[0], api.get_last_msgid(echoarea[0]), path="/", max_age=180*24*60*60, secret='some-secret-key')
+        current = request.get_cookie(echoarea[0], secret='some-secret-key')
+        if not current:
+            current = api.get_last_msgid(echoarea[0])
+        echoarea_msglist = api.get_echoarea(echoarea[0])
+        if len(echoarea_msglist) > 0 and current in echoarea_msglist:
+            new = int(api.get_echoarea_count(echoarea[0])) - echoarea_msglist.index(current) - 1
+        else:
+            new = 0
+        temp.append(new)
+        allechoareas.append(temp)
+    auth = request.get_cookie("authstr")
+    msgfrom, addr = points.check_point(auth)
+    return template("tpl/echolist.tpl", nodename=api.nodename, dsc=api.nodedsc, allechoareas=allechoareas, addr=addr, auth=auth, background=api.background)
+
 @route("/<e1>.<e2>")
 def echoreas(e1, e2):
     echoarea=e1 + "." + e2

@@ -3,12 +3,12 @@
 
 <div id="panel">
 <div id="buttons">
-<a href="/" class="button"><i class="fa fa-home"></i> Главная</a>
+<a href="/" class="button"><i class="fa fa-home"></i><span class="caption"> Главная</span></a>
 </div>
-<h3>{{echoarea[0]}}: {{echoarea[1]}}</h3>
+<h3><span class="caption">{{echoarea[0]}}: {{echoarea[1]}}</span></h3>
 %if msgid:
 <div id="rbuttons">
-<a href="/{{msgid}}" class="button"><i class="fa fa-arrow-circle-left"></i> Назад</a>
+<a href="/{{msgid}}" class="button"><i class="fa fa-arrow-circle-left"></i><span class="caption"> Назад</span></a>
 </div>
 %end
 </div><br>

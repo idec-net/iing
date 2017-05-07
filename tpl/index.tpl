@@ -2,15 +2,16 @@
 %include tpl/header.tpl nodename=nodename, dsc=dsc, background=background
 
 <div id="panel">
-<h3><img src="/lib/idec_grey.png" width="20"> {{dsc}}</h3>
+<h3><img src="/lib/idec_grey.png" width="20"><span class="caption"> {{dsc}}</span></h3>
+<a href="/echolist" id="echolist-button" class="button"><i class="fa fa-bars"></i></a>
 <div id="rbuttons">
-<a href="http://ii-net.tk/" class="button"><i class="fa fa-info-circle"></i> О нас</a>
-<a href="/s/subscription" class="button"><i class="fa fa-paper-plane"></i> Подписки</a>
-<a href="/s/filelist" class="button"><i class="fa fa-floppy-o"></i> Файлы</a>
+<a href="http://ii-net.tk/" class="button"><i class="fa fa-info-circle"></i><span class="caption"> О нас</span></a>
+<a href="/s/subscription" class="button"><i class="fa fa-paper-plane"></i><span class="caption"> Подписки</span></a>
+<a href="/s/filelist" class="button"><i class="fa fa-floppy-o"></i><span class="caption"> Файлы</span></a>
 %if addr:
-<a href="/logout" class="button"><i class="fa fa-sign-out"></i> Выйти</a>
+<a href="/logout" class="button"><i class="fa fa-sign-out"></i><span class="caption"> Выйти</span></a>
 %else:
-<a href="/login" class="button"><i class="fa fa-sign-in"></i> Войти</a>
+<a href="/login" class="button"><i class="fa fa-sign-in"></i><span class="caption"> Войти</span></a>
 %end
 </div>
 </div>

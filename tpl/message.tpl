@@ -3,16 +3,16 @@
 
 <div id="panel">
 <div id="buttons">
-<a href="/" class="button"><i class="fa fa-home"></i> Главная</a>
+<a href="/" class="button"><i class="fa fa-home"></i><span class="caption"> Главная</span></a>
 </div>
-<h3><i class="fa fa-comments"></i> {{echoarea[0]}}: {{echoarea[1]}}</h3>
+<h3><span class="caption"><i class="fa fa-comments"></i> {{echoarea[0]}}: {{echoarea[1]}}</span></h3>
 <div id="rbuttons">
-<a href="/msglist/{{echoarea[0]}}/{{msgid}}" class="button"><i class="fa fa-list"></i> Список</a>
-<a href="/new/{{echoarea[0]}}" class="button"><i class="fa fa-plus-circle"></i> Новое</a>
+<a href="/msglist/{{echoarea[0]}}/{{msgid}}" class="button"><i class="fa fa-list"></i><span class="caption"> Список</span></a>
+<a href="/new/{{echoarea[0]}}" class="button"><i class="fa fa-plus-circle"></i><span class="caption"> Новое</span></a>
 %if msgfrom:
-<a href="/logout" class="button"><i class="fa fa-sign-out"></i> Выйти</a>
+<a href="/logout" class="button"><i class="fa fa-sign-out"></i><span class="caption"> Выйти</span></a>
 %else:
-<a href="/login" class="button"><i class="fa fa-sign-in"></i> Войти</a>
+<a href="/login" class="button"><i class="fa fa-sign-in"></i><span class="caption"> Войти</span></a>
 %end
 </div>
 </div>
