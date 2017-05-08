@@ -4,6 +4,7 @@
 <div id="panel">
 <div id="buttons">
 <a href="/" class="button"><i class="fa fa-home"></i><span class="caption"> Главная</span></a>
+<a href="/echolist" id="echolist-button" class="button"><i class="fa fa-bars"></i></a>
 </div>
 <h3><span class="caption"><i class="fa fa-comments"></i> {{echoarea[0]}}: {{echoarea[1]}}</span></h3>
 <div id="rbuttons">

@@ -25,6 +25,13 @@ html, body {
     margin: 0 0 0 15px;
 }
 
+#container {
+    display: inline-block;
+    position: absolute;
+    width: 50%;
+    z-index: 0;
+}
+
 #buttons {
     float: left;
     font-size: 0;
@@ -33,11 +40,16 @@ html, body {
 }
 
 #rbuttons {
+    position: absolute;
+    right: 0;
+    top: 0;
     float: right;
     font-size: 0;
+    z-index: 10;
 }
 
 .button {
+    background: #333333;
     display: inline-block;
     font-size: 11pt;
     line-height: 40pt;
@@ -71,7 +83,8 @@ html, body {
 }
 
 #nodedsc, #echoname {
-    display: inline-block;
+    display: inline;
+    overflow: hidden;
 }
 
 a {
@@ -109,12 +122,12 @@ a {
     max-width: 700px;
 }
 
-.msglist {
-    width: 100%;
+.reply {
+    width: 80%;
 }
 
-.reply {
-    width: 78% !important;
+.msglist {
+    width: 100%;
 }
 
 .message-header {
@@ -373,8 +386,8 @@ textarea {
 }
 
 @media all and (max-width: 600px) {
-    .caption {
-	display: none;
+    .caption, #container {
+	display: none !important;
     }
     #side-menu {
 	display: none;
@@ -385,6 +398,9 @@ textarea {
     #content {
 	min-width: 320px;
 	max-width: 580px;
+    }
+    .reply {
+	width: 90%;
     }
     .new-button-link {
 	width: 80%;

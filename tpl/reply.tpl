@@ -16,14 +16,14 @@
 %end
 <div id="panel">
 <div id="buttons">
-<a href="/" class="button"><i class="fa fa-home"></i> Главная</a>
+<a href="/" class="button"><i class="fa fa-home"></i><span class="caption"> Главная</span></a>
 </div>
-<h3>{{title}}</h3>
+<h3><span class="caption">{{title}}</span></h3>
 </div>
 <br>
 <div id="conferences" class="width90">
 %if msgid:
-<div id="content" class="single-message reply">
+<div class="single-message reply">
 %for line in msg[8:]:
 {{line}}<br>
 %end
