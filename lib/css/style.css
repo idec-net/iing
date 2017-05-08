@@ -191,6 +191,12 @@ hr {
     background: #368a55;
 }
 
+.up-button {
+    width: 90%;
+    text-align: center;
+    display: none;
+}
+
 .echo-button-link {
     font-weight: bold;
     background: #666666;
@@ -406,5 +412,8 @@ textarea {
     .login {
 	min-width: 150px;
 	max-width: 350px;
+    }
+    .up-button {
+	display: block;
     }
 }
