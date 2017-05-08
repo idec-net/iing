@@ -122,10 +122,6 @@ a {
     max-width: 700px;
 }
 
-.reply {
-    width: 80%;
-}
-
 .msglist {
     width: 100%;
 }
@@ -252,6 +248,7 @@ hr {
 pre {
     line-height: normal;
     white-space: pre-wrap;;
+    word-break: break-all;
     margin: 0;
 }
 
@@ -398,9 +395,6 @@ textarea {
     #content {
 	min-width: 320px;
 	max-width: 580px;
-    }
-    .reply {
-	width: 90%;
     }
     .new-button-link {
 	width: 80%;
