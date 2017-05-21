@@ -333,6 +333,10 @@ textarea {
     padding: 5px;
 }
 
+.mfiles {
+    display: none;
+}
+
 .echorow td, .current-echorow td {
     padding: 2px 15px;
 }
@@ -414,6 +418,12 @@ textarea {
 	max-width: 350px;
     }
     .up-button {
+	display: block;
+    }
+    .files {
+	display: none;
+    }
+    .mfiles {
 	display: block;
     }
 }
