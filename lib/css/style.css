@@ -160,7 +160,7 @@ hr {
 
 #conferences, #subscriptions {
     background-color: rgba(255, 255, 255, 0.6);
-    padding: 5px 10px;
+    padding: 5px 10px 0;
     border: 1px solid #585858;
 }
 
@@ -189,12 +189,6 @@ hr {
 
 .new-button-link:hover {
     background: #368a55;
-}
-
-.up-button {
-    width: 90%;
-    text-align: center;
-    display: none;
 }
 
 .echo-button-link {
@@ -392,6 +386,14 @@ textarea {
     font-weight: bold;
 }
 
+.ontop {
+    color: #43ac6a;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    opacity: 0.5;
+}
+
 @media all and (max-width: 600px) {
     .caption, #container {
 	display: none !important;
@@ -405,6 +407,10 @@ textarea {
     #content {
 	min-width: 320px;
 	max-width: 580px;
+	width: 100%;
+    }
+    .message {
+	width: 100%;
     }
     .new-button-link {
 	width: 80%;
