@@ -28,6 +28,49 @@
 %else:
 %next = index[current]
 %end
+<script>
+  document.onkeydown = function(evt) {
+  evt = evt || window.event;
+  switch (evt.keyCode) {
+    case 83:
+      scrollBy(0,20);
+      evt.preventDefault();
+      break;
+    case 74:
+      scrollBy(0,20);
+      evt.preventDefault();
+      break;
+    case 87:
+      scrollBy(0,-20);
+      evt.preventDefault();
+      break;
+    case 75:
+      scrollBy(0,-20);
+      evt.preventDefault();
+      break;
+    case 65:
+      window.location.assign('/{{prev}}');
+      evt.preventDefault();
+      break;
+    case 72:
+      window.location.assign('/{{prev}}');
+      evt.preventDefault();
+      break;
+    case 68:
+      window.location.assign('/{{next}}');
+      evt.preventDefault();
+      break;
+    case 76:
+      window.location.assign('/{{next}}');
+      evt.preventDefault();
+      break;
+    case 81:
+      window.location.assign('http://idec.spline-online.tk/');
+      evt.preventDefault();
+      break;
+    }
+  };
+</script>
 <table cellpadding="0" cellsspacing="0" id="content">
 <tr>
 <td>

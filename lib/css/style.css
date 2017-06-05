@@ -2,13 +2,14 @@ html, body {
     color: #000000;
     margin: 0;
     font-family: sans-serif;
+    height: 100%;
 }
 
 #content {
     width: 95%;
     min-width: 700px;
     max-width: 1024px;
-
+    min-height: 100%;
 }
 
 #panel {
@@ -158,7 +159,7 @@ hr {
     padding-right: 20px;
 }
 
-#conferences, #subscriptions {
+#conferences, #subscriptions, #keys {
     background-color: rgba(255, 255, 255, 0.6);
     padding: 5px 10px 0;
     border: 1px solid #585858;
@@ -166,6 +167,12 @@ hr {
 
 #subscriptions {
     width: 90%;
+}
+
+#keys {
+    width: 200px;
+    padding: 15px;
+    margin-top: 10px;
 }
 
 #sform {
@@ -404,13 +411,16 @@ textarea {
     #echolist-button {
 	display: inline-block;
     }
+    #keys {
+	display: none;
+    }
     #content {
 	min-width: 320px;
 	max-width: 580px;
-	width: 100%;
+	width: 90%;
     }
     .message {
-	width: 100%;
+	width: 90%;
     }
     .new-button-link {
 	width: 80%;

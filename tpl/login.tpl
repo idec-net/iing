@@ -19,9 +19,9 @@
 <input type="text" name="username" class="input input_line login" placeholder="username"><br>
 %end
 %if auth:
-<input type="password" name="authstr" class="input input_line login" placeholder="authkey" value={{auth}}><br>
+<input type="password" name="password" class="input input_line login" placeholder="password" value={{auth}}><br>
 %else:
-<input type="password" name="authstr" class="input input_line login" placeholder="authkey"><br>
+<input type="password" name="password" class="input input_line login" placeholder="password"><br>
 %end
 <button class="form-button">Отправить</button>
 </form>

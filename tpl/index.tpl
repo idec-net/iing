@@ -1,6 +1,30 @@
 %import api
 %include tpl/header.tpl nodename=nodename, dsc=dsc, background=background
 
+<script>
+  document.onkeydown = function(evt) {
+  evt = evt || window.event;
+  switch (evt.keyCode) {
+    case 83:
+      scrollBy(0,20);
+      evt.preventDefault();
+      break;
+    case 74:
+      scrollBy(0,20);
+      evt.preventDefault();
+      break;
+    case 87:
+      scrollBy(0,-20);
+      evt.preventDefault();
+      break;
+    case 75:
+      scrollBy(0,-20);
+      evt.preventDefault();
+      break;
+    }
+  };
+</script>
+
 <div id="panel">
 <span id="container"><h3 id="nodedsc"><img src="/lib/idec_grey.png" width="20"> {{dsc}}</h3></span>
 <a href="/echolist" id="echolist-button" class="button"><i class="fa fa-bars"></i></a>
@@ -30,6 +54,8 @@
 %end
 %end
 </div>
+
+<img id="keys" src="lib/buttons.svg">
 </td>
 <td>
 
