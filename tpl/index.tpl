@@ -33,7 +33,7 @@
 <a href="/s/subscription" class="button"><i class="fa fa-paper-plane"></i><span class="caption"> Подписки</span></a>
 <a href="/s/filelist" class="button"><i class="fa fa-floppy-o"></i><span class="caption"> Файлы</span></a>
 %if addr:
-<a href="/logout" class="button"><i class="fa fa-sign-out"></i><span class="caption"> Выйти</span></a>
+<a href="/profile" class="button"><i class="fa fa-user"></i><span class="caption"> Профиль</span></a>
 %else:
 <a href="/login" class="button"><i class="fa fa-sign-in"></i><span class="caption"> Войти</span></a>
 %end

@@ -247,6 +247,12 @@ def login():
             return template("tpl/login.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, username=username, auth=auth, alarm="Неверные учётные данные!")
     return template("tpl/login.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, username=False, auth=False, alarm=False)
 
+@route("/profile")
+def profile():
+    auth = request.get_cookie("authstr")
+    username, addr = points.check_point(auth)
+    return template("tpl/profile.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, username=username, auth=auth, addr=addr)
+
 @route("/logout")
 def logout():
     response.set_cookie("authstr", "", path="/", max_age=-1, expires=0)

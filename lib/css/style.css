@@ -161,7 +161,7 @@ hr {
 
 #conferences, #subscriptions, #keys {
     background-color: rgba(255, 255, 255, 0.6);
-    padding: 5px 10px 0;
+    padding: 5px 10px;
     border: 1px solid #585858;
 }
 
@@ -309,6 +309,7 @@ textarea {
     background: #43ac6a;
     color: #ffffff;
     transition: all 0.5s ease-out;
+    text-decoration: none;
 }
 
 .form-button:hover {
