@@ -31,7 +31,8 @@ def salt():
     return str(random.randint(1, 999999999))
 
 def hsh(str):
-    return base64.urlsafe_b64encode(hashlib.sha256(str).digest()).decode("utf-8")
+    out = base64.urlsafe_b64encode(hashlib.sha256(str).digest()).decode("utf-8")
+    return out.replace('-', '').replace('_', '')[:8].ljust(8,'A')
 
 def save_point(phash, user, hsh):
     addrs = []
@@ -41,7 +42,6 @@ def save_point(phash, user, hsh):
             m += 1
             row = point.split(":")
             addrs.append(int(row[3]))
-    print(addrs)
     for i in range(1, m + 2):
         if not i in addrs:
             point = i
