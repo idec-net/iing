@@ -5,10 +5,10 @@ import hashlib, random, base64
 def check_point(auth):
     try:
         points = open("points.txt", "r").read().split("\n")
-        for i, n in enumerate(points):
+        for n in points:
             ud = n.split(":")
             if auth == ud[1]:
-                return ud[2], i + 1
+                return ud[2], ud[3]
         return "", None
     except:
         return "", None
@@ -18,7 +18,7 @@ def login(user, password):
         points = open("points.txt", "r").read().split("\n")
         for i, n in enumerate(points):
             ud = n.split(":")
-            if len(ud) == 3 and hsh(user.encode("utf-8") + password.encode("utf-8")) == ud[0]:
+            if len(ud) == 4 and hsh(user.encode("utf-8") + password.encode("utf-8")) == ud[0]:
                 return ud[1]
         return "error"
     except:
@@ -34,7 +34,19 @@ def hsh(str):
     return base64.urlsafe_b64encode(hashlib.sha256(str).digest()).decode("utf-8")
 
 def save_point(phash, user, hsh):
-    open("points.txt", "a").write("%s:%s:%s\n" % (hsh, phash, user))
+    addrs = []
+    m = 0
+    for point in open("points.txt", "r").read().split("\n"):
+        if len(point) > 0:
+            m += 1
+            row = point.split(":")
+            addrs.append(int(row[3]))
+    print(addrs)
+    for i in range(1, m + 2):
+        if not i in addrs:
+            point = i
+            break
+    open("points.txt", "a").write("%s:%s:%s:%s\n" % (hsh, phash, user, point))
 
 def make_point(user, password):
     hs = hsh(user.encode("utf-8") + password.encode("utf-8"))
