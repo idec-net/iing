@@ -1,13 +1,10 @@
-import os, re, time, math, codecs, base64, hashlib, sqlite3
-
-con = sqlite3.connect("iing.db")
-c = con.cursor()
+import os, re, time, math, codecs, base64, hashlib
 
 def init():
-#    if not os.path.exists("echo"):
-#        os.makedirs("echo")
-#    if not os.path.exists("msg"):
-#        os.makedirs("msg")
+    if not os.path.exists("echo"):
+        os.makedirs("echo")
+    if not os.path.exists("msg"):
+        os.makedirs("msg")
     if not os.path.exists("files"):
         os.makedirs("files")
     if not os.path.exists("blacklist.txt"):
