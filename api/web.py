@@ -237,10 +237,10 @@ def filelist():
 @post("/login")
 def login():
     username = request.forms.get("username")
-    auth = request.forms.get("authstr")
-    msgfrom, addr = points.check_point(auth)
-    if addr:
-        if msgfrom == username:
+    password = request.forms.get("password")
+    auth = points.login(username, password)
+    if auth:
+        if auth != "error":
             response.set_cookie("authstr", auth, path="/", max_age=3600000000)
             redirect("/")
         else:
