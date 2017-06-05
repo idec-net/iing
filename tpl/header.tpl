@@ -14,6 +14,8 @@
       }
     </script>
   </head>
-  <body style="background: url(/lib/{{background}}) no-repeat; background-size: cover; -webkit-background-size: cover; background-attachment: fixed;">
+  %import random
+  %image = random.choice(background)
+  <body style="background: url(/lib/{{image}}) no-repeat; background-size: cover; -webkit-background-size: cover; background-attachment: fixed;">
     <i id="ontop" class="fa fa-arrow-circle-up fa-2x ontop" onclick="document.body.scrollTop = document.documentElement.scrollTop = 0;"></i>
     <center>

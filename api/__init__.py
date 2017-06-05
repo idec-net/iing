@@ -23,7 +23,7 @@ def load_config():
     global nodename, nodedsc, echoareas, shortareas, web_interface, background, norobots, registration
     nodename = ""
     nodedsc = ""
-    background = ""
+    background = []
     echoareas = []
     shortareas = []
     web_interface = True
@@ -45,7 +45,7 @@ def load_config():
             else:
                 web_interface = False
         elif param[0] == "background":
-            background = param[1]
+            background = param[1].split(",")
         elif param[0] == "norobots":
             norobots = True
         elif param[0] == "registration":
