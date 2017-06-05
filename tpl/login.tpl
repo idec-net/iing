@@ -15,7 +15,10 @@
 <form method="post" enctype="multipart/form-data" action="/login">
 <input type="text" name="username" class="input input_line login" placeholder="username"><br>
 <input type="password" name="password" class="input input_line login" placeholder="password"><br>
-<button class="form-button">Войти</button> <a class="form-button" href="/registration">Регистрация</a>
+<button class="form-button">Войти</button>
+%if registration:
+<a class="form-button" href="/registration">Регистрация</a>
+%end
 </form>
 </div>
 %include tpl/footer.tpl

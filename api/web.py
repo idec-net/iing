@@ -244,8 +244,8 @@ def login():
             response.set_cookie("authstr", auth, path="/", max_age=3600000000)
             redirect("/")
         else:
-            return template("tpl/login.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, username=username, auth=auth, alarm="Неверные учётные данные!")
-    return template("tpl/login.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, username=False, auth=False, alarm=False)
+            return template("tpl/login.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, username=username, auth=auth, registration=api.registration, alarm="Неверные учётные данные!")
+    return template("tpl/login.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, registration=api.registration, username=False, auth=False, alarm=False)
 
 @route("/profile")
 def profile():
@@ -261,17 +261,20 @@ def logout():
 @route("/registration")
 @post("/registration")
 def registration():
-    username = request.forms.get("username")
-    password = request.forms.get("password")
-    if username and password:
-        if points.check_username(username):
-            return template("tpl/registration.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, alarm="Имя пользователя уже существует.")
-        else:
-            hsh, phash = points.make_point(username, password)
-            points.save_point(phash, username, hsh)
-            response.set_cookie("authstr", phash, path="/", max_age=3600000000)
-            redirect("/")
-    return template("tpl/registration.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, alarm=False)
+    if api.registration:
+        username = request.forms.get("username")
+        password = request.forms.get("password")
+        if username and password:
+            if points.check_username(username):
+                return template("tpl/registration.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, alarm="Имя пользователя уже существует.")
+            else:
+                hsh, phash = points.make_point(username, password)
+                points.save_point(phash, username, hsh)
+                response.set_cookie("authstr", phash, path="/", max_age=3600000000)
+                redirect("/")
+        return template("tpl/registration.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, alarm=False)
+    else:
+        redirect("/")
 
 @route("/lib/css/<filename>")
 def pcss(filename):

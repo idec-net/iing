@@ -20,7 +20,7 @@ def init():
         open("points.txt", "w")
 
 def load_config():
-    global nodename, nodedsc, echoareas, shortareas, web_interface, background, norobots
+    global nodename, nodedsc, echoareas, shortareas, web_interface, background, norobots, registration
     nodename = ""
     nodedsc = ""
     background = ""
@@ -28,6 +28,7 @@ def load_config():
     shortareas = []
     web_interface = True
     norobots = False
+    registration = False
 
     cfg = codecs.open("iing.cfg", "r", "utf8").read().split("\n")
     for line in cfg:
@@ -47,6 +48,8 @@ def load_config():
             background = param[1]
         elif param[0] == "norobots":
             norobots = True
+        elif param[0] == "registration":
+            registration = True
 
 def get_echoarea(echoarea):
     try:
