@@ -258,6 +258,21 @@ def logout():
     response.set_cookie("authstr", "", path="/", max_age=-1, expires=0)
     redirect("/")
 
+@route("/registration")
+@post("/registration")
+def registration():
+    username = request.forms.get("username")
+    password = request.forms.get("password")
+    if username and password:
+        if points.check_username(username):
+            return template("tpl/registration.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, alarm="Имя пользователя уже существует.")
+        else:
+            hsh, phash = points.make_point(username, password)
+            points.save_point(phash, username, hsh)
+            response.set_cookie("authstr", phash, path="/", max_age=3600000000)
+            redirect("/")
+    return template("tpl/registration.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, alarm=False)
+
 @route("/lib/css/<filename>")
 def pcss(filename):
     return static_file(filename, root="lib/css/")

@@ -310,6 +310,7 @@ textarea {
     color: #ffffff;
     transition: all 0.5s ease-out;
     text-decoration: none;
+    font-size: 12pt;
 }
 
 .form-button:hover {

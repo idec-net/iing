@@ -13,6 +13,15 @@ def check_point(auth):
     except:
         return "", None
 
+def check_username(username):
+    points = open("points.txt", "r").read().split("\n")
+    for n in points:
+        if len(n) > 0:
+            ud = n.split(":")
+            if username == ud[2]:
+                return True
+    return False
+
 def login(user, password):
     try:
         points = open("points.txt", "r").read().split("\n")
