@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, requests
+import sys, requests, os
 
 config = False
 node = False
@@ -34,13 +34,15 @@ try:
 except:
     None
 
-print(config)
-print(node, pauth, fecho, f, dsc)
-
 if config and node and pauth and fecho and f and dsc:
     files = {"file": open(f, "rb")}
     data = {"pauth": pauth, "fecho": fecho, "dsc": dsc}
-    r = requests.post(node + "f/p", data=data, files=files)
+    print("Отправка файла %s." % os.path.basename(f), end=": ")
+    try:
+        r = requests.post(node + "f/p", data=data, files=files)
+        print("OK")
+    except:
+        print("ERROR")
     print(r.text)
 else:
     print("Usage: ff.py -c <config> -e <fileecho> -f <filename> -d <description>.")
