@@ -5,14 +5,18 @@ def init():
         os.makedirs("echo")
     if not os.path.exists("msg"):
         os.makedirs("msg")
+    if not os.path.exists("fecho"):
+        os.makedirs("fecho")
     if not os.path.exists("files"):
         os.makedirs("files")
+    if not os.path.exists("files/indexes"):
+        os.makedirs("files/indexes")
     if not os.path.exists("blacklist.txt"):
         open("blacklist.txt", "w")
-    if not os.path.exists("public_files.txt"):
-        open("public_files.txt", "w")
-    if not os.path.exists("files.txt"):
-        open("files.txt", "w")
+    if not os.path.exists("files/indexes/public_files.txt"):
+        open("files/indexes/public_files.txt", "w")
+    if not os.path.exists("files/indexes/files.txt"):
+        open("files/indexes/files.txt", "w")
     if not os.path.exists("iing.cfg"):
         default_config = open("iing.def.cfg", "r").read()
         open("iing.cfg", "w").write(default_config)
@@ -188,7 +192,7 @@ def get_file_size(filename):
 
 def get_file_index():
     result = []
-    files = codecs.open("files.txt", "r", "utf8").read().split("\n")
+    files = codecs.open("files/indexes/files.txt", "r", "utf8").read().split("\n")
     for f in files:
         if len(f) > 0:
             fi = f.split(":")
@@ -201,7 +205,7 @@ def get_file_index():
 
 def get_public_file_index():
     result = []
-    files = codecs.open("public_files.txt", "r", "utf8").read().split("\n")
+    files = codecs.open("files/indexes/public_files.txt", "r", "utf8").read().split("\n")
     for f in files:
         if len(f) > 0:
             fi = f.split(":")
@@ -214,7 +218,7 @@ def get_public_file_index():
 
 def get_private_file_index(username):
     result = []
-    files = codecs.open(username + "_files.txt", "r", "utf8").read().split("\n")
+    files = codecs.open("files/indexes/" + username + "_files.txt", "r", "utf8").read().split("\n")
     for f in files:
         if len(f) > 0:
             fi = f.split(":")
@@ -223,4 +227,13 @@ def get_private_file_index(username):
             except:
                 size = "0"
             result.append([fi[0], size, " ".join(fi[1:]) + "\n"])
+    return result
+
+def get_fechoarea(fechoarea):
+    result = []
+    files = codecs.open("fecho/" + fechoarea + ".txt", "r", "utf8").read().split("\n")
+    for f in files:
+        if len(f) > 0:
+            fi = f.split(":")
+            result.append([fi[0], ":".join(fi[1:])])
     return result

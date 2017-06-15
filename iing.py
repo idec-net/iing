@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import api, points, base64, time, codecs
+import api, points, base64, time, codecs, os
 from api.bottle import *
 
 def write_to_log(line):
@@ -128,52 +128,10 @@ def x_caesium():
         echolist = echolist + "echo %s %s\n" % (echoarea[0], echoarea[1])
     return echolist
 
-#def get_file_size(filename):
-#    return os.stat("files/" + filename).st_size
-
 @route("/x/file")
 def file_error():
     response.set_header("content-type", "text/plain; charset=utf-8")
     return get_public_file_index()
-
-#def get_file_index():
-#    result = []
-#    files = codecs.open("files.txt", "r", "utf8").read().split("\n")
-#    for f in files:
-#        if len(f) > 0:
-#            fi = f.split(":")
-#            try:
-#                size = str(get_file_size(fi[0]))
-#            except:
-#                size = "0"
-#            result.append([fi[0], size, " ".join(fi[1:]) + "\n"])
-#    return result
-
-#def get_public_file_index():
-#    result = []
-#    files = codecs.open("public_files.txt", "r", "utf8").read().split("\n")
-#    for f in files:
-#        if len(f) > 0:
-#            fi = f.split(":")
-#            try:
-#                size = str(get_file_size(fi[0]))
-#            except:
-#                size = "0"
-#            result.append([fi[0], size, " ".join(fi[1:]) + "\n"])
-#    return result
-
-#def get_private_file_index(username):
-#    result = []
-#    files = codecs.open(username + "_files.txt", "r", "utf8").read().split("\n")
-#    for f in files:
-#        if len(f) > 0:
-#            fi = f.split(":")
-#            try:
-#                size = str(get_file_size(fi[0]))
-#            except:
-#                size = "0"
-#            result.append([fi[0], size, " ".join(fi[1:]) + "\n"])
-#    return result
 
 @route("/x/filelist")
 def public_filelist():
@@ -216,7 +174,7 @@ def get_public_file(filename):
     open("iing.log", "a").write("%s: x/file/%s\n" % (ip, filename))
     response.set_header("content-type", "text/plain; charset=utf-8")
     public_files = []
-    for line in codecs.open("public_files.txt", "r", "utf8").read().split("\n"):
+    for line in codecs.open("files/indexes/public_files.txt", "r", "utf8").read().split("\n"):
         try:
             public_files.append(line.split(":")[0])
         except:
@@ -233,17 +191,17 @@ def get_private_file(pauth, filename):
     msgfrom, addr = points.check_point(pauth)
     if addr:
         files = []
-        for line in codecs.open("public_files.txt", "r", "utf8").read().split("\n"):
+        for line in codecs.open("files/indexes/public_files.txt", "r", "utf8").read().split("\n"):
             try:
                 files.append(line.split(":")[0])
             except:
                 None
-        for line in codecs.open("files.txt", "r", "utf8").read().split("\n"):
+        for line in codecs.open("files/indexes/files.txt", "r", "utf8").read().split("\n"):
             try:
                 files.append(line.split(":")[0])
             except:
                 None
-        if os.path.exists(msgfrom + "_files.txt"):
+        if os.path.exists("files/indexes/" + msgfrom + "_files.txt"):
             for line in codecs.open(msgfrom + "_files.txt", "r", "utf8").read().split("\n"):
                 try:
                     files.append(line.split(":")[0])
@@ -328,10 +286,65 @@ def robots():
     else:
         return "User-agent: *\nAllow: /"
 
+@route("/f/e/<fecho>")
+def fecho_index(fecho):
+    result = ""
+    ip = request['REMOTE_ADDR']
+    open("iing.log", "a").write("%s: f/e/%s\n" % (ip, fecho))
+    response.set_header("content-type", "text/plain; charset=utf-8")
+    try:
+        files = codecs.open("fecho/%s.txt" % fecho, "r", "utf8").read()
+        return files
+    except:
+        return "file echo not found"
+
+@route("/f/f/<fecho>/<filename>")
+def fecho_file(fecho, filename):
+    ip = request['REMOTE_ADDR']
+    open("iing.log", "a").write("%s: f/f/%s/%s\n" % (ip, fecho, filename))
+    response.set_header("content-type", "text/plain; charset=utf-8")
+    if os.path.exists("fecho/%s/%s" % (fecho, filename)):
+        return static_file(filename, "fecho/%s/" % fecho)
+    else:
+        return "file not found"
+
+@post("/f/p")
+def fecho_post():
+    response.set_header("content-type", "text/plain; charset=utf-8")
+    try:
+        pauth = request.POST["pauth"]
+    except:
+        pauth = False
+    try:
+        fecho = request.POST["fecho"]
+    except:
+        fecho = False
+    try:
+        f = request.files.get("file")
+    except:
+        f = False
+    try:
+        dsc = request.POST["dsc"]
+    except:
+        dsc = False
+    if pauth and fecho and f and dsc:
+        try:
+            msgfrom, addr = points.check_point(pauth)
+            print(addr)
+            if addr:
+                if not os.path.exists("fecho/%s" % fecho):
+                    os.makedirs("fecho/%s" % fecho)
+                f.save("fecho/%s/%s" % (fecho, f.raw_filename))
+                codecs.open("fecho/%s.txt" % fecho, "a", "utf8").write("%s:%s\n" % (f.raw_filename, dsc.replace("\n", " ")))
+            else:
+                return "auth error!"
+        except:
+            return "cannot save file"
+
 api.init()
 api.load_config()
 
 if api.web_interface:
     from api.web import *
 
-run(host="0.0.0.0", port=3000, quiet=True)
+run(host="0.0.0.0", port=3000)#, quiet=True)
