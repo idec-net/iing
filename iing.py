@@ -287,14 +287,30 @@ def robots():
         return "User-agent: *\nAllow: /"
 
 @route("/f/e/<fecho>")
-def fecho_index(fecho):
-    result = ""
+@route("/f/e/<fecho>/<s>:<e>")
+def fecho_index(fecho, s=False, e=False):
+    index = ""
     ip = request['REMOTE_ADDR']
     open("iing.log", "a").write("%s: f/e/%s\n" % (ip, fecho))
     response.set_header("content-type", "text/plain; charset=utf-8")
     try:
-        files = codecs.open("fecho/%s.txt" % fecho, "r", "utf8").read()
-        return files
+        if s and e:
+            s = int(s)
+            e = int(e)
+            ss = s
+            if s < 0 and s + len(api.get_fechoarea(fecho)) < 0:
+                ss = 0
+            elif s > len(api.get_fechoarea(fecho)):
+                ss = e * -1
+            if s + e == 0:
+                files = api.get_fechoarea(fecho)[ss:]
+            else:
+                files = api.get_fechoarea(fecho)[ss:ss + e]
+        else:
+            files = files = api.get_fechoarea(fecho)
+        for row in files:
+            index = index + ":".join(row) + "\n"
+        return index
     except:
         return "file echo not found"
 
@@ -330,7 +346,6 @@ def fecho_post():
     if pauth and fecho and f and dsc:
         try:
             msgfrom, addr = points.check_point(pauth)
-            print(addr)
             if addr:
                 if not os.path.exists("fecho/%s" % fecho):
                     os.makedirs("fecho/%s" % fecho)
