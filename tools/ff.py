@@ -11,7 +11,7 @@ dsc = False
 
 def load_config(filename):
     global node, pauth
-    f = open(fiename, "r").read().split("\n")
+    f = open(filename, "r").read().split("\n")
     for line in f:
         param = line.split(" ")
         if param[0] == "node":
@@ -33,6 +33,9 @@ try:
     load_config(config)
 except:
     None
+
+print(config)
+print(node, pauth, fecho, f, dsc)
 
 if config and node and pauth and fecho and f and dsc:
     files = {"file": open(f, "rb")}
