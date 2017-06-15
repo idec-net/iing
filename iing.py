@@ -286,6 +286,15 @@ def robots():
     else:
         return "User-agent: *\nAllow: /"
 
+@route("/f/c/<fechoes:path>")
+def fecho_counts(fechoes):
+    response.set_header("content-type", "text/plain; charset=utf-8")
+    fechoes = fechoes.split("/")
+    counts = ""
+    for fecho in fechoes:
+        counts = counts + fecho + ":" + str(len(api.get_fechoarea(fecho))) + "\n"
+    return counts
+
 @route("/f/e/<fecho>")
 @route("/f/e/<fecho>/<s>:<e>")
 def fecho_index(fecho, s=False, e=False):
@@ -350,7 +359,7 @@ def fecho_post():
                 if not os.path.exists("fecho/%s" % fecho):
                     os.makedirs("fecho/%s" % fecho)
                 f.save("fecho/%s/%s" % (fecho, f.raw_filename))
-                codecs.open("fecho/%s.txt" % fecho, "a", "utf8").write("%s:%s\n" % (f.raw_filename, dsc.replace("\n", " ")))
+                codecs.open("fecho/%s.txt" % fecho, "a", "utf8").write("%s:%s:%s,%s:%s\n" % (f.raw_filename, msgfrom, api.nodename, addr, dsc.replace("\n", " ")))
             else:
                 return "auth error!"
         except:
