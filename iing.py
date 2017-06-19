@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-import api, points, base64, time, codecs, os
+import api, points, base64, time, codecs, os, hashlib
 from api.bottle import *
+from shutil import copyfile
 
 def write_to_log(line):
     ip = request.environ.get('HTTP_X_FORWARDED_FOR') or request.environ.get('REMOTE_ADDR')
@@ -184,11 +185,12 @@ def get_public_file(filename):
     else:
         return "file not found"
 
-@route("/x/file/<pauth>/<filename>")
+@route("/x/file/<pauth>/<filename:path>")
 def get_private_file(pauth, filename):
     write_to_log("x/file/%s/%s GET" % (pauth, filename))
     response.set_header("content-type", "text/plain; charset=utf-8")
     msgfrom, addr = points.check_point(pauth)
+    print(filename)
     if addr:
         files = []
         for line in codecs.open("files/indexes/public_files.txt", "r", "utf8").read().split("\n"):
@@ -201,6 +203,15 @@ def get_private_file(pauth, filename):
                 files.append(line.split(":")[0])
             except:
                 None
+        fechoes = []
+        for fecho in os.listdir("fecho"):
+            fechoes.append(fecho)
+        for fecho in fechoes:
+            f = codecs.open("fecho/%s" % fecho, "r").read().split("\n")
+            for row in f:
+                if len(row) > 0:
+                    r = row.split(":")
+                    files.append(fecho + "/" + r[1])
         if os.path.exists("files/indexes/" + msgfrom + "_files.txt"):
             for line in codecs.open(msgfrom + "_files.txt", "r", "utf8").read().split("\n"):
                 try:
@@ -245,6 +256,15 @@ def post_file():
                     files.append(line.split(":")[0])
                 except:
                     None
+        fechoes = []
+        for fecho in os.listdir("fecho"):
+            fechoes.append(fecho)
+        for fecho in fechoes:
+            f = codecs.open("fecho/%s" % fecho, "r").read().split("\n")
+            for row in f:
+                if len(row) > 0:
+                    r = row.split(":")
+                    files.append(fecho + "/" + r[1])
         if filename in files:
             return static_file(filename, "files/")
         else:
@@ -295,43 +315,47 @@ def fecho_counts(fechoes):
         counts = counts + fecho + ":" + str(len(api.get_fechoarea(fecho))) + "\n"
     return counts
 
-@route("/f/e/<fecho>")
-@route("/f/e/<fecho>/<s>:<e>")
-def fecho_index(fecho, s=False, e=False):
+@route("/f/e/<fechoes:path>")
+def fecho_index(fechoes):
     index = ""
+    fechoes = fechoes.split("/")
     ip = request['REMOTE_ADDR']
-    open("iing.log", "a").write("%s: f/e/%s\n" % (ip, fecho))
+    open("iing.log", "a").write("%s: f/e/%s\n" % (ip, fechoes))
     response.set_header("content-type", "text/plain; charset=utf-8")
-    try:
-        if s and e:
-            s = int(s)
-            e = int(e)
+    s = 0
+    e = 0
+    if ":" in fechoes[-1]:
+        s = int(fechoes[-1].split(":")[0])
+        e = int(fechoes[-1].split(":")[1])
+        r = True
+        fechoes = fechoes[0:-1]
+    files = []
+#    try:
+    if s != 0 and e != 0:
+        s = int(s)
+        e = int(e)
+        for fecho in fechoes:
             ss = s
             if s < 0 and s + len(api.get_fechoarea(fecho)) < 0:
                 ss = 0
             elif s > len(api.get_fechoarea(fecho)):
                 ss = e * -1
             if s + e == 0:
-                files = api.get_fechoarea(fecho)[ss:]
+                for f in api.get_fechoarea(fecho)[ss:]:
+                    files.append(f)
             else:
-                files = api.get_fechoarea(fecho)[ss:ss + e]
-        else:
-            files = files = api.get_fechoarea(fecho)
-        for row in files:
-            index = index + ":".join(row) + "\n"
-        return index
-    except:
-        return "file echo not found"
-
-@route("/f/f/<fecho>/<filename>")
-def fecho_file(fecho, filename):
-    ip = request['REMOTE_ADDR']
-    open("iing.log", "a").write("%s: f/f/%s/%s\n" % (ip, fecho, filename))
-    response.set_header("content-type", "text/plain; charset=utf-8")
-    if os.path.exists("fecho/%s/%s" % (fecho, filename)):
-        return static_file(filename, "fecho/%s/" % fecho)
+                for f in api.get_fechoarea(fecho)[ss:ss + e]:
+                    files.append(f)
     else:
-        return "file not found"
+        for fecho in fechoes:
+            for f in api.get_fechoarea(fecho):
+                files.append(f)
+    print(files)
+    for row in files:
+        index = index + ":".join(row) + "\n"
+    return index
+#    except:
+#        return "file echo not found"
 
 @post("/f/p")
 def fecho_post():
@@ -353,17 +377,47 @@ def fecho_post():
     except:
         dsc = False
     if pauth and fecho and f and dsc:
-        try:
+        if api.fecho_filter(fecho):
             msgfrom, addr = points.check_point(pauth)
             if addr:
-                if not os.path.exists("fecho/%s" % fecho):
-                    os.makedirs("fecho/%s" % fecho)
-                f.save("fecho/%s/%s" % (fecho, f.raw_filename))
-                codecs.open("fecho/%s.txt" % fecho, "a", "utf8").write("%s:%s:%s,%s:%s\n" % (f.raw_filename, msgfrom, api.nodename, addr, dsc.replace("\n", " ")))
+                f.save("temp")
+                if not os.path.exists("files/%s" % fecho):
+                    os.makedirs("files/%s" % fecho)
+                hsh = api.fhsh(open("./temp", "rb").read())
+                hshs = []
+                try:
+                    for row in open("fecho/%s" % fecho, "r").read().split("\n"):
+                        hshs.append(row.split(":")[0])
+                except:
+                    None
+                if not hsh in hshs:
+                    name = f.raw_filename
+                    while os.path.exists("files/%s/%s" % (fecho, name)):
+                        tmp = name.split(".")
+                        name = ".".join(tmp[:-1])
+                        suffix = name.split("_")[-1]
+                        if suffix == name:
+                            suffix = "0"
+                        try:
+                            s = int(suffix)
+                            s += 1
+                            post = "_" + str(s)
+                        except:
+                            post = "_1"
+                        if suffix != "0":
+                            name = name.replace("_" + suffix, post) + "." + tmp[-1]
+                        else:
+                            name = name + post + "." + tmp[-1]
+                    copyfile("temp", "files/%s/%s" % (fecho, name))
+                    codecs.open("fecho/%s" % fecho, "a", "utf8").write("%s:%s:%s:%s,%s:%s\n" % (hsh, name, msgfrom, api.nodename, addr, dsc.replace("\n", " ")))
+                else:
+                    os.remove("./temp")
+                    return "file exists"
+                os.remove("./temp")
             else:
                 return "auth error!"
-        except:
-            return "cannot save file"
+        else:
+            return "incorrect fileechoarea"
 
 api.init()
 api.load_config()

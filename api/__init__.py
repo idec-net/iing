@@ -108,6 +108,9 @@ def get_time(echoarea):
 def echo_filter(ea):
     rr = re.compile(r'^[a-z0-9_!.-]{1,60}\.[a-z0-9_!.-]{1,60}$')
     if rr.match(ea): return True
+def fecho_filter(ea):
+    rr = re.compile(r'^[a-z0-9_!.-]{1,120}$')
+    if rr.match(ea): return True
 
 def msg_filter(msgid):
     rr = re.compile(r'^[a-z0-9A-Z]{20}$')
@@ -119,6 +122,10 @@ def create_echoarea(echoarea):
 
 def hsh(msg):
     ret = base64.urlsafe_b64encode(hashlib.sha256(msg.encode()).digest()).decode("utf-8").replace("-", "A").replace("_", "z")[:20]
+    return ret
+
+def fhsh(msg):
+    ret = base64.urlsafe_b64encode(hashlib.sha256(msg).digest()).decode("utf-8").replace("-", "A").replace("_", "z")[:20]
     return ret
 
 def toss_msg(msgfrom, addr, tmsg):
@@ -144,16 +151,19 @@ def toss_msg(msgfrom, addr, tmsg):
     msg = "\n".join(msg)
 #    except:
 #        msg = None
-    if msg:
-        if len(msg) <= 65535:
-            h = hsh(msg)
-            open("echo/" + echoarea, "a").write(h + "\n")
-            codecs.open("msg/" + h, "w", "utf8").write(msg)
-            return "msg ok:" + h
+    if echo_filter(echoarea):
+        if msg:
+            if len(msg) <= 65535:
+                h = hsh(msg)
+                open("echo/" + echoarea, "a").write(h + "\n")
+                codecs.open("msg/" + h, "w", "utf8").write(msg)
+                return "msg ok:" + h
+            else:
+                return "msg big!"
         else:
-            return "msg big!"
+            return "error:unknown"
     else:
-        return "error:unknown"
+        return "incorrect echoarea"
 
 def body_render(body):
     body = body.strip()
@@ -193,6 +203,15 @@ def get_file_size(filename):
 def get_file_index():
     result = []
     files = codecs.open("files/indexes/files.txt", "r", "utf8").read().split("\n")
+    fechoes = []
+    for fecho in os.listdir("fecho"):
+        fechoes.append(fecho)
+    for fecho in fechoes:
+        f = codecs.open("fecho/%s" % fecho, "r").read().split("\n")
+        for row in f:
+            if len(row) > 0:
+                r = row.split(":")
+                files.append(fecho + "/" + r[1] + ":" + ":".join(r[4:]))
     for f in files:
         if len(f) > 0:
             fi = f.split(":")
@@ -231,9 +250,12 @@ def get_private_file_index(username):
 
 def get_fechoarea(fechoarea):
     result = []
-    files = codecs.open("fecho/" + fechoarea + ".txt", "r", "utf8").read().split("\n")
-    for f in files:
-        if len(f) > 0:
-            fi = f.split(":")
-            result.append([fi[0], ":".join(fi[1:])])
+    try:
+        files = codecs.open("fecho/" + fechoarea, "r", "utf8").read().split("\n")
+        for f in files:
+            if len(f) > 0:
+                fi = f.split(":")
+                result.append([fi[0], ":".join(fi[1:])])
+    except:
+        None
     return result

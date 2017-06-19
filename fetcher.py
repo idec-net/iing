@@ -14,6 +14,7 @@ to = False
 depth = "200"
 
 def load_config():
+    auth = ""
     node = ""
     depth = "200"
     echoareas = []
@@ -29,7 +30,9 @@ def load_config():
             echoareas.append(param[1])
         elif param[0] == "fecho":
             fechoareas.append(param[1])
-    return node, depth, echoareas, fechoareas
+        elif param[0] == "auth":
+            auth = " ".join(param[1:])
+    return node, auth, depth, echoareas, fechoareas
 
 def check_directories():
     if not os.path.exists("echo"):
@@ -190,7 +193,7 @@ def get_mail():
 def get_local_fecho(fecho):
     index = []
     try:
-        for f in open("fecho/%s.txt" % fecho, "r").read().split("\n"):
+        for f in open("fecho/%s" % fecho, "r").read().split("\n"):
             if len(f) > 0:
                 index.append(f.split(":")[0])
     except:
@@ -207,17 +210,17 @@ def get_remote_fecho(fecho):
                     index.append(row)
     except:
         None
+    print(index)
     return index
 
 def download_file(fecho, fi):
-    r = urllib.request.Request(node + "f/f/" + fecho + "/" + fi.split(":")[0])
+    print("%sx/file/%s/%s/%s" % (node, auth, fecho, fi.split(":")[1]))
+    r = urllib.request.Request("%sx/file/%s/%s/%s" % (node, auth, fecho, fi.split(":")[1]))
     out = urllib.request.urlopen(r)
     file_size=0
     block_size=8192
 
-    if not os.path.exists("fecho/%s" % fecho):
-        os.makedirs("fecho/%s" % fecho)
-    f = open("fecho/%s/%s" % (fecho, fi.split(":")[0]), "wb")
+    f = open("files/%s" % fi.split(":")[1], "wb")
     while True:
         buffer = out.read(block_size)
         if not buffer:
@@ -225,14 +228,16 @@ def download_file(fecho, fi):
         file_size += len(buffer)
         f.write(buffer)
     f.close()
-    open("fecho/%s.txt" % fecho, "a").write(fi + "\n")
+    codecs.open("fecho/%s" % fecho, "a", "utf8").write(fi + "\n")
+    fi = fi.split(":")
+    codecs.open("files/indexes/files.txt", "a", "utf8").write(fi[1] + ":" + ":".join(fi[4:]))
 
 def get_fecho():
     for fecho in fechoareas:
         print("Получени индекса файлэхи %s" % fecho)
         index = get_remote_fecho(fecho)
         for f in index:
-            print("Получение файла %s" % f.split(":")[0])
+            print("Получение файла %s" % f.split(":")[1])
             download_file(fecho, f)
 
 def check_new_echoareas():
@@ -288,7 +293,7 @@ if not "-n" in args and not "-e" in args and not os.path.exists(config):
 
 check_directories()
 if not "-n" in args or not "-e" in args:
-    node, depth, echoareas, fechoareas = load_config()
+    node, auth, depth, echoareas, fechoareas = load_config()
 print("Работа с " + node)
 print("Получение списка возможностей ноды...")
 get_features()
