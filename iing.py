@@ -169,7 +169,7 @@ def private_filelist(pauth = False):
         result = result + ":".join(f)
     return result
 
-@route("/x/file/<filename>")
+@route("/x/file/<filename:path>")
 def get_public_file(filename):
     ip = request['REMOTE_ADDR']
     open("iing.log", "a").write("%s: x/file/%s\n" % (ip, filename))
@@ -184,44 +184,6 @@ def get_public_file(filename):
         return static_file(filename, "files/")
     else:
         return "file not found"
-
-@route("/x/file/<pauth>/<filename:path>")
-def get_private_file(pauth, filename):
-    write_to_log("x/file/%s/%s GET" % (pauth, filename))
-    response.set_header("content-type", "text/plain; charset=utf-8")
-    msgfrom, addr = points.check_point(pauth)
-    print(filename)
-    if addr:
-        files = []
-        for line in codecs.open("files/indexes/public_files.txt", "r", "utf8").read().split("\n"):
-            try:
-                files.append(line.split(":")[0])
-            except:
-                None
-        for line in codecs.open("files/indexes/files.txt", "r", "utf8").read().split("\n"):
-            try:
-                files.append(line.split(":")[0])
-            except:
-                None
-        fechoes = []
-        for fecho in os.listdir("fecho"):
-            fechoes.append(fecho)
-        for fecho in fechoes:
-            f = codecs.open("fecho/%s" % fecho, "r").read().split("\n")
-            for row in f:
-                if len(row) > 0:
-                    r = row.split(":")
-                    files.append(fecho + "/" + r[1])
-        if os.path.exists("files/indexes/" + msgfrom + "_files.txt"):
-            for line in codecs.open(msgfrom + "_files.txt", "r", "utf8").read().split("\n"):
-                try:
-                    files.append(line.split(":")[0])
-                except:
-                    None
-        if filename in files:
-            return static_file(filename, "files/")
-        else:
-            return "file not found"
 
 @post("/x/file")
 def post_file():
@@ -270,7 +232,7 @@ def post_file():
         else:
             return "file not found"
     files = []
-    for line in codecs.open("public_files.txt", "r", "utf8").read().split("\n"):
+    for line in codecs.open("files/indexes/public_files.txt", "r", "utf8").read().split("\n"):
         try:
             files.append(line.split(":")[0])
         except:
