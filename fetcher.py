@@ -30,9 +30,7 @@ def load_config():
             echoareas.append(param[1])
         elif param[0] == "fecho":
             fechoareas.append(param[1])
-        elif param[0] == "auth":
-            auth = " ".join(param[1:])
-    return node, auth, depth, echoareas, fechoareas
+    return node, depth, echoareas, fechoareas
 
 def check_directories():
     if not os.path.exists("echo"):
@@ -195,32 +193,30 @@ def get_local_fecho(fecho):
     try:
         for f in open("fecho/%s" % fecho, "r").read().split("\n"):
             if len(f) > 0:
-                index.append(f.split(":")[0])
+                index.append(f)
     except:
         None
     return index
 
-def get_remote_fecho(fecho):
+def get_remote_fecho():
     index = []
     try:
-        r = urllib.request.Request(node + "f/e/" + fecho)
+        r = urllib.request.Request(node + "f/e/" + "/".join(fechoareas))
         with urllib.request.urlopen(r) as f:
             for row in f.read().decode("utf8").split("\n"):
-                if len(row) > 0:
+                if len(row) > 0 and not row in fechoareas:
                     index.append(row)
     except:
         None
-    print(index)
     return index
 
-def download_file(fecho, fi):
-    print("%sx/file/%s/%s/%s" % (node, auth, fecho, fi.split(":")[1]))
-    r = urllib.request.Request("%sx/file/%s/%s/%s" % (node, auth, fecho, fi.split(":")[1]))
+def download_file(fi):
+    r = urllib.request.Request("%sf/f/%s/%s" % (node, fi[0], fi[1].split(":")[0]))
     out = urllib.request.urlopen(r)
     file_size=0
     block_size=8192
 
-    f = open("files/%s" % fi.split(":")[1], "wb")
+    f = open("files/%s" % fi[1].split(":")[1], "wb")
     while True:
         buffer = out.read(block_size)
         if not buffer:
@@ -228,17 +224,31 @@ def download_file(fecho, fi):
         file_size += len(buffer)
         f.write(buffer)
     f.close()
-    codecs.open("fecho/%s" % fecho, "a", "utf8").write(fi + "\n")
-    fi = fi.split(":")
+    codecs.open("fecho/%s" % fi[0], "a", "utf8").write(fi[1] + "\n")
+    fi = fi[1].split(":")
     codecs.open("files/indexes/files.txt", "a", "utf8").write(fi[1] + ":" + ":".join(fi[4:]))
 
 def get_fecho():
+    print("Получение индекса файлэх.")
+    remote_index = get_remote_fecho()
+    print("Построение разностного индекса.")
+    local_index = []
     for fecho in fechoareas:
-        print("Получени индекса файлэхи %s" % fecho)
-        index = get_remote_fecho(fecho)
-        for f in index:
-            print("Получение файла %s" % f.split(":")[1])
-            download_file(fecho, f)
+        local_fecho = get_local_fecho(fecho)
+        for fid in local_fecho:
+            local_index.append(fid)
+    index = []
+    for fi in remote_index:
+        if not fi in local_index:
+            index.append([fecho, fi])
+    for fi in index:
+        row = fi[1].split(":")
+        print("Получение файла %s" % row[1], end=" ")
+        try:
+            download_file(fi)
+            print("OK")
+        except:
+            print("ERROR")
 
 def check_new_echoareas():
     local_base = os.listdir("echo/")
@@ -293,7 +303,7 @@ if not "-n" in args and not "-e" in args and not os.path.exists(config):
 
 check_directories()
 if not "-n" in args or not "-e" in args:
-    node, auth, depth, echoareas, fechoareas = load_config()
+    node, depth, echoareas, fechoareas = load_config()
 print("Работа с " + node)
 print("Получение списка возможностей ноды...")
 get_features()

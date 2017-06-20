@@ -374,11 +374,16 @@ def fecho_post():
                         except:
                             post = "_1"
                         if suffix != "0":
-                            name = name.replace("_" + suffix, post) + "." + tmp[-1]
+                            Name = name.replace("_" + suffix, post) + "." + tmp[-1]
                         else:
                             name = name + post + "." + tmp[-1]
+                    try:
+                        size = str(os.stat("temp").st_size)
+                    except:
+                        size = "0"
                     copyfile("temp", "files/%s/%s" % (fecho, name))
-                    codecs.open("fecho/%s" % fecho, "a", "utf8").write("%s:%s:%s:%s,%s:%s\n" % (hsh, name, msgfrom, api.nodename, addr, dsc.replace("\n", " ")))
+                    codecs.open("fecho/%s" % fecho, "a", "utf8").write("%s:%s:%s:%s,%s:%s\n" % (hsh, name, size, api.nodename, addr, dsc.replace("\n", " ")))
+                    codecs.open("files/indexes/files.txt", "a", "utf8").write("%s:%s\n" % (name, dsc.replace("\n", " ")))
                 else:
                     os.remove("./temp")
                     return "file exists"
