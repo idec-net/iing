@@ -202,18 +202,18 @@ def post_file():
     files = []
     msgfrom, addr = points.check_point(pauth)
     if addr:
-        for line in codecs.open("public_files.txt", "r", "utf8").read().split("\n"):
+        for line in codecs.open("files/indexes/public_files.txt", "r", "utf8").read().split("\n"):
             try:
                 files.append(line.split(":")[0])
             except:
                 None
-        for line in codecs.open("files.txt", "r", "utf8").read().split("\n"):
+        for line in codecs.open("files/indexes/files.txt", "r", "utf8").read().split("\n"):
             try:
                 files.append(line.split(":")[0])
             except:
                 None
-        if os.path.exists(msgfrom + "_files.txt"):
-            for line in codecs.open(msgfrom + "_files.txt", "r", "utf8").read().split("\n"):
+        if os.path.exists("files/indexes/" + msgfrom + "_files.txt"):
+            for line in codecs.open("files/indexes/" + msgfrom + "_files.txt", "r", "utf8").read().split("\n"):
                 try:
                     files.append(line.split(":")[0])
                 except:
@@ -292,7 +292,6 @@ def fecho_index(fechoes):
         r = True
         fechoes = fechoes[0:-1]
     files = []
-#    try:
     if s != 0 and e != 0:
         s = int(s)
         e = int(e)
@@ -312,12 +311,20 @@ def fecho_index(fechoes):
         for fecho in fechoes:
             for f in api.get_fechoarea(fecho):
                 files.append(f)
-    print(files)
     for row in files:
         index = index + ":".join(row) + "\n"
     return index
-#    except:
-#        return "file echo not found"
+
+@route("/f/f/<fecho>/<fid>")
+def fecho_file(fecho, fid):
+    if not os.path.exists("fecho/%s" % fecho):
+        return "file echo not found"
+    fecho_ = open("fecho/%s" % fecho, "r").read().split("\n")
+    fids = [f.split(":")[0] for f in fecho_]
+    files = [f.split(":")[1] for f in fecho_ if len(f) > 0]
+    if not fid in fids:
+        return "file not found"
+    return static_file(files[fids.index(fid)], "files/%s/" % fecho)
 
 @post("/f/p")
 def fecho_post():
