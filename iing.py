@@ -311,14 +311,19 @@ def fecho_index(fechoes):
         for fecho in fechoes:
             for f in api.get_fechoarea(fecho):
                 files.append(f)
+    blacklist = open("fblacklist.txt", "r").read().split("\n")
     for row in files:
-        index = index + ":".join(row) + "\n"
+        if not row[0] in blacklist:
+            index = index + ":".join(row) + "\n"
     return index
 
 @route("/f/f/<fecho>/<fid>")
 def fecho_file(fecho, fid):
     if not os.path.exists("fecho/%s" % fecho):
-        return "file echo not found"
+        return "file echoarea not found"
+    blacklist = open("fblacklist.txt", "r").read().split("\n")
+    if fid in blacklist:
+        return "file blocked"
     fecho_ = open("fecho/%s" % fecho, "r").read().split("\n")
     fids = [f.split(":")[0] for f in fecho_]
     files = [f.split(":")[1] for f in fecho_ if len(f) > 0]
@@ -359,7 +364,8 @@ def fecho_post():
                         hshs.append(row.split(":")[0])
                 except:
                     None
-                if not hsh in hshs:
+                blacklist = open("fblacklist.txt", "r").read().split("\n")
+                if not hsh in hshs and no hsh in blacklist:
                     name = f.raw_filename
                     while os.path.exists("files/%s/%s" % (fecho, name)):
                         tmp = name.split(".")
@@ -391,7 +397,13 @@ def fecho_post():
             else:
                 return "auth error!"
         else:
-            return "incorrect fileechoarea"
+            return "incorrect file echoarea"
+
+@route("f/blacklist.txt")
+def file_blacklist():
+    write_to_log("f/blacklist.txt")
+    response.set_header("content-type", "text/plain; charset=utf-8")
+    return open("fblacklist.txt", "r").read()
 
 api.init()
 api.load_config()

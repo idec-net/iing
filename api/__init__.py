@@ -13,6 +13,8 @@ def init():
         os.makedirs("files/indexes")
     if not os.path.exists("blacklist.txt"):
         open("blacklist.txt", "w")
+    if not os.path.exists("fblacklist.txt"):
+        open("fblacklist.txt", "w")
     if not os.path.exists("files/indexes/public_files.txt"):
         open("files/indexes/public_files.txt", "w")
     if not os.path.exists("files/indexes/files.txt"):
