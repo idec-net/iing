@@ -296,6 +296,7 @@ def fecho_index(fechoes):
         s = int(s)
         e = int(e)
         for fecho in fechoes:
+            files.append([fecho])
             ss = s
             if s < 0 and s + len(api.get_fechoarea(fecho)) < 0:
                 ss = 0
@@ -309,12 +310,17 @@ def fecho_index(fechoes):
                     files.append(f)
     else:
         for fecho in fechoes:
+            files.append([fecho])
             for f in api.get_fechoarea(fecho):
                 files.append(f)
     blacklist = open("fblacklist.txt", "r").read().split("\n")
     for row in files:
+        print(row)
         if not row[0] in blacklist:
-            index = index + ":".join(row) + "\n"
+            if len(row) > 1:
+                index = index + ":".join(row) + "\n"
+            else:
+                index = index + row[0] + "\n"
     return index
 
 @route("/f/f/<fecho>/<fid>")
@@ -365,7 +371,7 @@ def fecho_post():
                 except:
                     None
                 blacklist = open("fblacklist.txt", "r").read().split("\n")
-                if not hsh in hshs and no hsh in blacklist:
+                if not hsh in hshs and not hsh in blacklist:
                     name = f.raw_filename
                     while os.path.exists("files/%s/%s" % (fecho, name)):
                         tmp = name.split(".")
