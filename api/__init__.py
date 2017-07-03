@@ -110,8 +110,9 @@ def get_time(echoarea):
 def echo_filter(ea):
     rr = re.compile(r'^[a-z0-9_!.-]{1,60}\.[a-z0-9_!.-]{1,60}$')
     if rr.match(ea): return True
+
 def fecho_filter(ea):
-    rr = re.compile(r'^[a-z0-9_!.-]{1,120}$')
+    rr = re.compile(r'^[a-z0-9_!.-]{3,120}$')
     if rr.match(ea): return True
 
 def msg_filter(msgid):
