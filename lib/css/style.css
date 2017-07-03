@@ -167,6 +167,7 @@ hr {
 
 #subscriptions {
     width: 90%;
+    overflow: hidden;
 }
 
 #keys {
