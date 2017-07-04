@@ -204,7 +204,7 @@ def get_remote_fecho():
         r = urllib.request.Request(node + "f/e/" + "/".join(fechoareas))
         with urllib.request.urlopen(r) as f:
             for row in f.read().decode("utf8").split("\n"):
-                if len(row) > 0 and not row in fechoareas:
+                if len(row) > 0:
                     index.append(row)
     except:
         None
@@ -216,7 +216,9 @@ def download_file(fi):
     file_size=0
     block_size=8192
 
-    f = open("files/%s" % fi[1].split(":")[1], "wb")
+    if not os.path.exists("files/%s" % fi[0]):
+        os.mkdir("files/%s" % fi[0])
+    f = open("files/%s/%s" % (fi[0], fi[1].split(":")[1]), "wb")
     while True:
         buffer = out.read(block_size)
         if not buffer:
@@ -224,9 +226,10 @@ def download_file(fi):
         file_size += len(buffer)
         f.write(buffer)
     f.close()
-    codecs.open("fecho/%s" % fi[0], "a", "utf8").write(fi[1] + "\n")
+    codecs.open("fecho/%s" % fi[0], "a", "utf-8").write(fi[1] + "\n")
+    fe = fi[0]
     fi = fi[1].split(":")
-    codecs.open("files/indexes/files.txt", "a", "utf8").write(fi[1] + ":" + ":".join(fi[4:]))
+    codecs.open("files/indexes/files.txt", "a", "utf-8").write(fe + "/" + fi[1] + ":" + ":".join(fi[4:]) + "\n")
 
 def get_fecho():
     print("Получение индекса файлэх.")
@@ -239,7 +242,9 @@ def get_fecho():
             local_index.append(fid)
     index = []
     for fi in remote_index:
-        if not fi in local_index:
+        if not ":" in fi:
+            fecho = fi
+        elif not fi in local_index:
             index.append([fecho, fi])
     for fi in index:
         row = fi[1].split(":")
