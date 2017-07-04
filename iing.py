@@ -258,7 +258,7 @@ def xc(echoareas):
 @route("/x/features")
 def features():
     response.set_header("content-type", "text/plain; charset=utf-8")
-    return "u/e\nlist.txt\nblacklist.txt\nx/file\nx/small-echolist\nx/caesium\nx/c"
+    return "u/e\nlist.txt\nblacklist.txt\nx/file\nx/small-echolist\nx/caesium\nx/c\nf/"
 
 @route("/robots.txt")
 def robots():
