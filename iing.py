@@ -405,11 +405,21 @@ def fecho_post():
         else:
             return "incorrect file echoarea"
 
-@route("f/blacklist.txt")
+@route("/f/blacklist.txt")
 def file_blacklist():
     write_to_log("f/blacklist.txt")
     response.set_header("content-type", "text/plain; charset=utf-8")
     return open("fblacklist.txt", "r").read()
+
+@route("/f/list.txt")
+def felist():
+    write_to_log("f/list.tx")
+    response.set_header("content-type", "text/plain; charset=utf-8")
+    ret = ""
+    for fecho in api.fechoareas:
+        flen = len(open("fecho/%s" % fecho[0], "r").read().split("\n")) - 1
+        ret = ret + fecho[0] + ":" + str(flen) + ":" + fecho[1] + "\n"
+    return ret
 
 api.init()
 api.load_config()
