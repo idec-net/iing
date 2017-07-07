@@ -63,7 +63,9 @@ def make_point(user, password):
     return hs, phash
 
 if __name__ == "__main__":
-    import sys
+    import sys, os
+    if not os.path.exists("points.txt"):
+        open("points.txt", "w").write("")
     args = sys.argv[1:]
     if "-u" in args and "-p":
         user = args[args.index("-u") + 1]

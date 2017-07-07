@@ -23,7 +23,13 @@ c.execute("CREATE INDEX IF NOT EXISTS subject ON 'msg' ('subject');")
 c.execute("CREATE INDEX IF NOT EXISTS body ON 'msg' ('body');")
 con.commit()
 
+def check_config():
+    if not os.path.exists("iing.cfg"):
+        open("iing.cfg", "w").write(open("iing.def.cfg", "r").read())
+
 def init():
+    if not os.path.exists("points.txt"):
+        open("points.txt", "w").write("")
     if not os.path.exists("fecho"):
         os.makedirs("fecho")
     if not os.path.exists("files"):
