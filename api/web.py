@@ -183,20 +183,25 @@ def reply(e1, e2, msgid = False):
 @post("/a/savemsg/<echoarea>/<msgid>")
 def save_messsage(echoarea, msgid = False):
     if api.echo_filter(echoarea):
-        pauth = request.forms.get("authstr")
-        msgfrom, addr = points.check_point(pauth)
-        if not addr:
-            return "auth error!"
-        response.set_cookie("authstr", pauth, path="/", max_age=3600000000)
-        msg = ""
-        msg = msg + echoarea + "\n"
-        msg = msg + request.forms.get("to") + "\n"
-        msg = msg + request.forms.get("subj") + "\n\n"
-        if msgid:
-            msg = msg + "@repto:" + msgid + "\n"
-        msg = msg + request.forms.get("msgbody")
-        msg = base64.b64encode(msg.encode("utf8"))
-        return template("tpl/send.tpl", nodename=api.nodename, dsc=api.nodedsc, message=api.toss_msg(msgfrom, addr, msg), echoarea=echoarea, background=api.background)
+        subj = request.forms.get("subj")
+        msgbody = request.forms.get("msgbody")
+        if len(subj) > 0 and len(msgbody) > 0:
+            pauth = request.forms.get("authstr")
+            msgfrom, addr = points.check_point(pauth)
+            if not addr:
+                return "auth error!"
+            response.set_cookie("authstr", pauth, path="/", max_age=3600000000)
+            msg = ""
+            msg = msg + echoarea + "\n"
+            msg = msg + request.forms.get("to") + "\n"
+            msg = msg + subj + "\n\n"
+            if msgid:
+                msg = msg + "@repto:" + msgid + "\n"
+            msg = msg + msgbody
+            msg = base64.b64encode(msg.encode("utf8"))
+            return template("tpl/send.tpl", nodename=api.nodename, dsc=api.nodedsc, message=api.toss_msg(msgfrom, addr, msg), echoarea=echoarea, background=api.background)
+        else:
+            redirect("/")
 
 @post("/s/subscription")
 @route("/s/subscription")
