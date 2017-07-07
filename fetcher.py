@@ -58,6 +58,10 @@ def load_config():
 def check_directories():
     if not os.path.exists("fecho"):
         os.makedirs("fecho")
+    if not os.path.exists("files"):
+        os.makedirs("files")
+    if not os.path.exists("files/indexes"):
+        os.makedirs("files/indexes")
 
 def separate(l, step=40):
     for x in range(0, len(l), step):
@@ -181,7 +185,7 @@ def get_mail():
     print("Построение разностного индекса...")
     for line in remote_msg_list:
         if echo_filter(line):
-            if line in clone and not full:
+            if line in clone or full:
                 try:
                     c.execute("DELETE FROM msg WHERE echoarea = ?;", (line,))
                     con.commit
