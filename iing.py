@@ -63,7 +63,7 @@ def outmsg(msgids):
     for msgid in msgids.split("/"):
         result = result + msgid + ":"
         try:
-            msg = str.encode(codecs.open("msg/" + msgid, "r", "utf8").read())
+            msg = str.encode(api.get_msg(msgid))
             result = result + (base64.b64encode(msg)).decode("utf-8") + "\n"
         except:
             result = result + "\n"
@@ -101,7 +101,7 @@ def e(echoarea):
 def m(msgid):
     response.set_header("content-type", "text/plain; charset=utf-8")
     try:
-        return codecs.open("msg/" + msgid, "r", "utf8").read()
+        return api.get_msg(msgid)
     except:
         return ""
 
@@ -421,8 +421,8 @@ def felist():
         ret = ret + fecho[0] + ":" + str(flen) + ":" + fecho[1] + "\n"
     return ret
 
-api.init()
 api.load_config()
+api.init()
 
 if api.web_interface:
     from api.web import *

@@ -1,10 +1,29 @@
-import os, re, time, math, codecs, base64, hashlib
+import os, re, time, math, codecs, base64, hashlib, sqlite3
+
+con = sqlite3.connect("idec.db")
+c = con.cursor()
+
+# Create databse
+c.execute("""CREATE TABLE IF NOT EXISTS msg(
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    msgid TEXT,
+    tags TEXT,
+    echoarea TEXT,
+    time INTEGER,
+    fr TEXT,
+    addr TEXT,
+    t TEXT,
+    subject TEXT,
+    body TEXT,
+    UNIQUE (id));""")
+c.execute("CREATE INDEX IF NOT EXISTS msgid ON 'msg' ('msgid');")
+c.execute("CREATE INDEX IF NOT EXISTS echoarea ON 'msg' ('echoarea');")
+c.execute("CREATE INDEX IF NOT EXISTS time ON 'msg' ('time');")
+c.execute("CREATE INDEX IF NOT EXISTS subject ON 'msg' ('subject');")
+c.execute("CREATE INDEX IF NOT EXISTS body ON 'msg' ('body');")
+con.commit()
 
 def init():
-    if not os.path.exists("echo"):
-        os.makedirs("echo")
-    if not os.path.exists("msg"):
-        os.makedirs("msg")
     if not os.path.exists("fecho"):
         os.makedirs("fecho")
     if not os.path.exists("files"):
@@ -26,11 +45,12 @@ def init():
         open("points.txt", "w")
 
 def load_config():
-    global nodename, nodedsc, echoareas, shortareas, web_interface, background, norobots, registration
+    global nodename, nodedsc, echoareas, fechoareas, shortareas, web_interface, background, norobots, registration
     nodename = ""
     nodedsc = ""
     background = []
     echoareas = []
+    fechoareas = []
     shortareas = []
     web_interface = True
     norobots = False
@@ -45,6 +65,8 @@ def load_config():
             nodedsc = " ".join(param[1:])
         elif param[0] == "echo":
             echoareas.append([param[1], " ".join(param[2:])])
+        elif param[0] == "fecho":
+            fechoareas.append([param[1], " ".join(param[2:])])
         elif param[0] == "webinterface":
             if param[1] == "1":
                 web_interface = True
@@ -57,11 +79,18 @@ def load_config():
         elif param[0] == "registration":
             registration = True
 
+def get_echo_msgids(echo):
+    msgids = []
+    for row in c.execute("SELECT msgid FROM msg WHERE echoarea = ? ORDER BY id;", (echo,)):
+        if len(row[0]) > 0:
+            msgids.append(row[0])
+    return msgids
+
 def get_echoarea(echoarea):
     try:
         blacklist = open("blacklist.txt", "r").read().split("\n")
         result = []
-        for msgid in open("echo/" + echoarea, "r").read().split("\n"):
+        for msgid in get_echo_msgids(echoarea):
             if msgid != "" and not msgid in blacklist:
                 result.append(msgid)
         return result
@@ -70,39 +99,35 @@ def get_echoarea(echoarea):
 
 def get_msg(msgid):
     try:
-        return codecs.open("msg/" + msgid, "r", "utf8").read()
+        row = c.execute("SELECT tags, echoarea, time, fr, addr, t, subject, body FROM msg WHERE msgid = ?;", (msgid,)).fetchone()
+        return "\n".join([row[0], row[1], str(row[2]), row[3], row[4], row[5], row[6], row[7]])
     except:
         return ""
 
 def get_echoarea_count(echoarea):
-    blacklist = open("blacklist.txt", "r").read().split("\n")
-    result = 0
-    try:
-        for msgid in open("echo/" + echoarea, "r").read().split("\n"):
-            if msgid != "" and not msgid in blacklist:
-                result = result + 1
-        return str(result)
-    except:
-        return "0"
+    row = c.execute("SELECT COUNT(1) FROM msg WHERE echoarea = ?;", (echoarea,)).fetchone()
+    return row[0]
 
 def get_last_msg(echoarea):
     try:
-        return codecs.open("msg/" + get_echoarea(echoarea)[-1], "r", "utf8").read().split("\n")
+        row = c.execute("SELECT tags, echoarea, time, fr, addr, t, subject, body FROM msg WHERE echoarea = ? ORDER BY msgid DESC LIMIT 1;", (echoarea,)).fetchone()
+        msg = [row[0], row[1], str(row[2]), row[3], row[4], row[5], row[6], row[7]]
     except:
-        return []
+        msg = []
+    return msg
 
 def get_last_msgid(echoarea):
     try:
-        return get_echoarea(echoarea)[-1]
+        return c.execute("SELECT msgid FROM msg WHERE echoarea = ? ORDER BY id DESC LIMIT 1;", (echoarea,)).fetchone()[0]
     except:
-        return False
+        return []
 
 def formatted_time(timestamp):
     return time.strftime("%d.%m.%y %H:%M UTC", time.gmtime(int(timestamp)))
 
 def get_time(echoarea):
     try:
-        time = int(open("msg/" + get_echoarea(echoarea)[-1], "r").read().split("\n")[2])
+        time = c.execute("SELECT time FROM msg WHERE echoarea = ? ORDER BY msgid DESC LIMIT 1;", (echoarea,)).fetchone()[0]
     except:
         time = 0
     return time
@@ -119,10 +144,6 @@ def msg_filter(msgid):
     rr = re.compile(r'^[a-z0-9A-Z]{20}$')
     if rr.match(msgid): return True
 
-def create_echoarea(echoarea):
-    if not os.path.exists("echo/" + echoarea):
-        open("echo/" + echoarea, "w")
-
 def hsh(msg):
     ret = base64.urlsafe_b64encode(hashlib.sha256(msg.encode()).digest()).decode("utf-8").replace("-", "A").replace("_", "z")[:20]
     return ret
@@ -132,34 +153,35 @@ def fhsh(msg):
     return ret
 
 def toss_msg(msgfrom, addr, tmsg):
-#    try:
-    rawmsg = base64.b64decode(tmsg).decode("utf-8").split("\n")
-    msg = []
-    if rawmsg[4].startswith("@repto:"):
-        msg.append("ii/ok/repto/" + rawmsg[4].split(":")[1])
-        n = 5
-    else:
-        n = 4
-        msg.append("ii/ok")
-    echoarea = rawmsg[0]
-    msg.append(rawmsg[0])
-    msg.append(str(round(time.time())))
-    msg.append(msgfrom)
-    msg.append(nodename + "," + str(addr))
-    msg.append(rawmsg[1])
-    msg.append(rawmsg[2])
-    msg.append("")
-    for line in rawmsg[n:]:
-        msg.append(line)
-    msg = "\n".join(msg)
-#    except:
-#        msg = None
+    try:
+        rawmsg = base64.b64decode(tmsg).decode("utf-8").split("\n")
+        msg = []
+        if rawmsg[4].startswith("@repto:"):
+            msg.append("ii/ok/repto/" + rawmsg[4].split(":")[1])
+            n = 5
+        else:
+            n = 4
+            msg.append("ii/ok")
+        echoarea = rawmsg[0]
+        msg.append(rawmsg[0])
+        msg.append(str(round(time.time())))
+        msg.append(msgfrom)
+        msg.append(nodename + "," + str(addr))
+        msg.append(rawmsg[1])
+        msg.append(rawmsg[2])
+        msg.append("")
+        for line in rawmsg[n:]:
+            msg.append(line)
+        msg = "\n".join(msg)
+    except:
+        msg = None
     if echo_filter(echoarea):
         if msg:
             if len(msg) <= 65535:
                 h = hsh(msg)
-                open("echo/" + echoarea, "a").write(h + "\n")
-                codecs.open("msg/" + h, "w", "utf8").write(msg)
+                msg = msg.split("\n")
+                c.execute("INSERT INTO msg (msgid, tags, echoarea, time, fr, addr, t, subject, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", (h, msg[0], msg[1], msg[2], msg[3], msg[4], msg[5], msg[6], "\n".join(msg[7:])))
+                con.commit()
                 return "msg ok:" + h
             else:
                 return "msg big!"

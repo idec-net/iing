@@ -1,6 +1,29 @@
 #!/usr/bin/env python3
 
-import urllib.request, base64, codecs, re, os, sys, pickle
+import urllib.request, base64, codecs, re, os, sys, pickle, sqlite3
+
+con = sqlite3.connect("idec.db")
+c = con.cursor()
+
+# Create databse
+c.execute("""CREATE TABLE IF NOT EXISTS msg(
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    msgid TEXT,
+    tags TEXT,
+    echoarea TEXT,
+    time INTEGER,
+    fr TEXT,
+    addr TEXT,
+    t TEXT,
+    subject TEXT,
+    body TEXT,
+    UNIQUE (id));""")
+c.execute("CREATE INDEX IF NOT EXISTS msgid ON 'msg' ('msgid');")
+c.execute("CREATE INDEX IF NOT EXISTS echoarea ON 'msg' ('echoarea');")
+c.execute("CREATE INDEX IF NOT EXISTS time ON 'msg' ('time');")
+c.execute("CREATE INDEX IF NOT EXISTS subject ON 'msg' ('subject');")
+c.execute("CREATE INDEX IF NOT EXISTS body ON 'msg' ('body');")
+con.commit()
 
 clone = []
 counts = {}
@@ -33,10 +56,6 @@ def load_config():
     return node, depth, echoareas, fechoareas
 
 def check_directories():
-    if not os.path.exists("echo"):
-        os.makedirs("echo")
-    if not os.path.exists("msg"):
-        os.makedirs("msg")
     if not os.path.exists("fecho"):
         os.makedirs("fecho")
 
@@ -99,11 +118,12 @@ def calculate_offset():
     if not n:
         depth = offset
 
-def get_echoarea(echoarea):
-    try:
-        return open("echo/" + echoarea, "r").read().split("\n")
-    except:
-        return []
+def get_echoarea(echo):
+    msgids = []
+    for row in c.execute("SELECT msgid FROM msg WHERE echoarea = ? ORDER BY id;", (echo,)):
+        if len(row[0]) > 0:
+            msgids.append(row[0])
+    return msgids
 
 def get_msg_list():
     global clone
@@ -145,16 +165,9 @@ def debundle(bundle):
             m = msg.split(":")
             msgid = m[0]
             if len(msgid) == 20 and m[1]:
-                msgbody = base64.b64decode(m[1].encode("ascii")).decode("utf8")
-                codecs.open("msg/" + msgid, "w", "utf-8").write(msgbody)
-                codecs.open("echo/" + msgbody.split("\n")[1], "a", "utf-8").write(msgid + "\n")
-                if to:
-                    try:
-                        carbonarea = open("echo/carbonarea", "r").read().split("\n")
-                    except:
-                        carbonarea = []
-                    if msgbody.split("\n")[5] in to and not msgid in carbonarea:
-                        codecs.open("echo/carbonarea", "a", "utf-8").write(msgid + "\n")
+                msg = base64.b64decode(m[1].encode("ascii")).decode("utf8").split("\n")
+                c.execute("INSERT INTO msg (msgid, tags, echoarea, time, fr, addr, t, subject, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", (msgid, msg[0], msg[1], msg[2], msg[3], msg[4], msg[5], msg[6], "\n".join(msg[7:])))
+    con.commit()
 
 def echo_filter(ea):
     rr = re.compile(r'^[a-z0-9_!.-]{1,60}\.[a-z0-9_!.-]{1,60}$')
@@ -170,7 +183,8 @@ def get_mail():
         if echo_filter(line):
             if line in clone and not full:
                 try:
-                    os.remove("echo/" + line)
+                    c.execute("DELETE FROM msg WHERE echoarea = ?;", (line,))
+                    con.commit
                 except:
                     None
             local_index = get_echoarea(line)
@@ -256,7 +270,9 @@ def get_fecho():
             print("ERROR")
 
 def check_new_echoareas():
-    local_base = os.listdir("echo/")
+    local_base = []
+    for row in c.execute("SELECT echoarea FROM msg GROUP BY echoarea;"):
+        local_base.append(row[0])
     n = False
     for echoarea in echoareas:
         if not echoarea in local_base:
@@ -318,7 +334,7 @@ if len(echoareas) > 0 and xc and not full:
     print("Получение количества сообщений в конференциях...")
     remote_counts = get_remote_counts()
     calculate_offset()
-#get_mail()
+get_mail()
 get_fecho()
 if xc:
     save_counts()

@@ -88,13 +88,11 @@ def echoreas(e1, e2):
     if not request.get_cookie(echoarea):
         response.set_cookie(echoarea, api.get_last_msgid(echoarea), max_age=180*24*60*60, secret='some-secret-key')
     last = request.get_cookie(echoarea, secret='some-secret-key')
-    if not last:
+    if not last or len(last) == 0:
         last = api.get_last_msgid(echoarea)
     index = api.get_echoarea(echoarea)
     if len(index) > 0 and index[-1] != last and last in index:
         last = index[index.index(last) + 1]
-    else:
-        last = api.get_last_msgid(echoarea)
     if len(index) == 0:
         last = False
     if echoarea != "favicon.ico":
@@ -108,14 +106,14 @@ def showmsg(msgid):
     api.load_config()
     if api.msg_filter(msgid):
         body = api.get_msg(msgid).split("\n")
-        if len(body) > 0:
+        if body != [""]:
             msgfrom, addr = points.check_point(request.get_cookie("authstr"))
             kludges = body[0].split("/")
             if "repto" in kludges:
                 repto = kludges[kludges.index("repto") + 1]
             else:
                 repto = False
-            if body:
+            if len(body) > 0:
                 echoarea = [ea for ea in api.echoareas if ea[0] == body[1]]
                 if len(echoarea) == 0:
                     echoarea = [body[1], ""]
@@ -175,7 +173,11 @@ def msg_list(echoarea, page=False, msgid=False):
 def reply(e1, e2, msgid = False):
     echoarea = e1 + "." + e2
     auth = request.get_cookie("authstr")
-    return template("tpl/reply.tpl", nodename=api.nodename, dsc=api.nodedsc, echoarea=echoarea, msgid=msgid, auth=auth, hidehome=False, topiclist=False, background=api.background)
+    if msgid:
+        msg = api.get_msg(msgid).split("\n")
+    else:
+        msg = False
+    return template("tpl/reply.tpl", nodename=api.nodename, dsc=api.nodedsc, echoarea=echoarea, msgid=msgid, msg=msg, auth=auth, hidehome=False, topiclist=False, background=api.background)
 
 @post("/a/savemsg/<echoarea>")
 @post("/a/savemsg/<echoarea>/<msgid>")
