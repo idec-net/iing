@@ -421,6 +421,7 @@ def felist():
         ret = ret + fecho[0] + ":" + str(flen) + ":" + fecho[1] + "\n"
     return ret
 
+api.check_config()
 api.load_config()
 api.init()
 
