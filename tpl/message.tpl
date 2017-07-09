@@ -65,7 +65,7 @@
       evt.preventDefault();
       break;
     case 81:
-      window.location.assign('http://idec.spline-online.tk/');
+      window.location.assign('/');
       evt.preventDefault();
       break;
     }
