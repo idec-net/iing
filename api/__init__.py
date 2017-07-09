@@ -116,7 +116,7 @@ def get_echoarea_count(echoarea):
 
 def get_last_msg(echoarea):
     try:
-        row = c.execute("SELECT tags, echoarea, time, fr, addr, t, subject, body FROM msg WHERE echoarea = ? ORDER BY msgid DESC LIMIT 1;", (echoarea,)).fetchone()
+        row = c.execute("SELECT tags, echoarea, time, fr, addr, t, subject, body FROM msg WHERE echoarea = ? ORDER BY id DESC LIMIT 1;", (echoarea,)).fetchone()
         msg = [row[0], row[1], str(row[2]), row[3], row[4], row[5], row[6], row[7]]
     except:
         msg = []
@@ -133,7 +133,7 @@ def formatted_time(timestamp):
 
 def get_time(echoarea):
     try:
-        time = c.execute("SELECT time FROM msg WHERE echoarea = ? ORDER BY msgid DESC LIMIT 1;", (echoarea,)).fetchone()[0]
+        time = c.execute("SELECT time FROM msg WHERE echoarea = ? ORDER BY id DESC LIMIT 1;", (echoarea,)).fetchone()[0]
     except:
         time = 0
     return time
