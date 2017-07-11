@@ -30,7 +30,9 @@
 <a href="/echolist" id="echolist-button" class="button"><i class="fa fa-bars"></i></a>
 <div id="rbuttons">
 <a href="http://ii-net.tk/" class="button"><i class="fa fa-info-circle"></i><span class="caption"> О нас</span></a>
+%if not nosubscription:
 <a href="/s/subscription" class="button"><i class="fa fa-paper-plane"></i><span class="caption"> Подписки</span></a>
+%end
 <a href="/s/filelist" class="button"><i class="fa fa-floppy-o"></i><span class="caption"> Файлы</span></a>
 %if addr:
 <a href="/profile" class="button"><i class="fa fa-user"></i><span class="caption"> Профиль</span></a>

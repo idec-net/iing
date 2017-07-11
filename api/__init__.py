@@ -51,7 +51,7 @@ def init():
         open("points.txt", "w")
 
 def load_config():
-    global nodename, nodedsc, echoareas, fechoareas, shortareas, web_interface, background, norobots, registration
+    global nodename, nodedsc, echoareas, fechoareas, shortareas, web_interface, background, norobots, registration, nosubscription
     nodename = ""
     nodedsc = ""
     background = []
@@ -61,6 +61,7 @@ def load_config():
     web_interface = True
     norobots = False
     registration = False
+    nosubscription = False
 
     cfg = codecs.open("iing.cfg", "r", "utf8").read().split("\n")
     for line in cfg:
@@ -84,6 +85,8 @@ def load_config():
             norobots = True
         elif param[0] == "registration":
             registration = True
+        elif param[0] == "nosubscription":
+            nosubscription = True
 
 def get_echo_msgids(echo):
     msgids = []

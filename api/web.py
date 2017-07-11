@@ -12,15 +12,18 @@ def index():
             subscription.append(ea[0])
         response.set_cookie("subscription", subscription, path="/", max_age=180*24*60*60, secret='some-secret-key')
         s = subscription
-    subscription = []
-    for ea in s:
-        flag = False
-        for e in api.echoareas:
-            if ea in e:
-                flag = True
-                subscription.append(e)
-        if not flag:
-            subscription.append([ea, ""])
+    if api.nosubscription:
+        subscription = api.echoareas
+    else:
+        subscription = []
+        for ea in s:
+            flag = False
+            for e in api.echoareas:
+                if ea in e:
+                    flag = True
+                    subscription.append(e)
+            if not flag:
+                subscription.append([ea, ""])
     ea = [[echoarea[0], echoarea[1], api.get_time(echoarea[0])] for echoarea in subscription]
     for echoarea in sorted(ea, key=lambda ea: ea[2], reverse=True)[0:5]:
         echoareas.append({"echoname": echoarea[0], "count": api.get_echoarea_count(echoarea[0]), "dsc": echoarea[1], "msg": api.get_last_msg(echoarea[0])})
@@ -41,7 +44,7 @@ def index():
         allechoareas.append(temp)
     auth = request.get_cookie("authstr")
     msgfrom, addr = points.check_point(auth)
-    return template("tpl/index.tpl", nodename=api.nodename, dsc=api.nodedsc, echoareas=echoareas, allechoareas=allechoareas, addr=addr, auth=auth, background=api.background)
+    return template("tpl/index.tpl", nodename=api.nodename, dsc=api.nodedsc, echoareas=echoareas, allechoareas=allechoareas, addr=addr, auth=auth, background=api.background, nosubscription=api.nosubscription)
 
 @route("/echolist")
 def echolist():
