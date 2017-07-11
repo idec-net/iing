@@ -243,6 +243,11 @@ def filelist():
         None
     return template("tpl/filelist.tpl", nodename=api.nodename, dsc=api.nodedsc, files=sorted(files), auth=auth, background=api.background)
 
+@route("/s/download/<filename:path>")
+def download(filename):
+    filename = filename.split("/")
+    return static_file(filename[-1], "files/%s" % "/".join(filename[:-1]))
+
 @route("/login")
 @post("/login")
 def login():

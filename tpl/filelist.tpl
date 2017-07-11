@@ -14,11 +14,7 @@
 %for file in files:
 <tr>
 <td>
-%if auth:
-<a href="/x/file/{{auth}}/{{file[0]}}">{{file[0]}}</a>
-%else:
-<a href="/x/file/{{file[0]}}">{{file[0]}}</a>
-%end
+<a href="/s/download/{{file[0]}}">{{file[0]}}</a>
 </td>
 <td>
 %size = int(file[1])
@@ -43,11 +39,7 @@
 %for file in files:
 <tr>
 <td>
-%if auth:
-<a href="/x/file/{{auth}}/{{file[0]}}">
-%else:
-<a href="/x/file/{{file[0]}}">
-%end
+<a href="/s/download/{{file[0]}}">
 {{file[0]}}
 </a><br>
 {{file[2]}}

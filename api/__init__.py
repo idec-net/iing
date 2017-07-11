@@ -238,14 +238,6 @@ def get_file_index():
     result = []
     files = codecs.open("files/indexes/files.txt", "r", "utf8").read().split("\n")
     fechoes = []
-    for fecho in os.listdir("fecho"):
-        fechoes.append(fecho)
-    for fecho in fechoes:
-        f = codecs.open("fecho/%s" % fecho, "r").read().split("\n")
-        for row in f:
-            if len(row) > 0:
-                r = row.split(":")
-                files.append(fecho + "/" + r[1] + ":" + ":".join(r[4:]))
     for f in files:
         if len(f) > 0:
             fi = f.split(":")
