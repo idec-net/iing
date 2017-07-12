@@ -185,12 +185,6 @@ def get_mail():
     print("Построение разностного индекса...")
     for line in remote_msg_list:
         if echo_filter(line):
-            if line in clone or full:
-                try:
-                    c.execute("DELETE FROM msg WHERE echoarea = ?;", (line,))
-                    con.commit
-                except:
-                    None
             local_index = get_echoarea(line)
         else:
             if not line in local_index:
