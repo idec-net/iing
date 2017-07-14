@@ -27,7 +27,7 @@ def login(user, password):
         points = open("points.txt", "r").read().split("\n")
         for i, n in enumerate(points):
             ud = n.split(":")
-            if len(ud) == 4 and hsh(user.encode("utf-8") + password.encode("utf-8")) == ud[0]:
+            if len(ud) > 3 and hsh(user.encode("utf-8") + password.encode("utf-8")) == ud[0]:
                 return ud[1]
         return "error"
     except:
