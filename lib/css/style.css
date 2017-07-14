@@ -239,9 +239,10 @@ hr {
 }
 
 .blacklisted {
+    width: 20px;
     background: #ec5840;
     float: left;
-    margin: -16px -44px;
+    margin: -16px -45px;
 }
 
 .blacklisted:hover {
