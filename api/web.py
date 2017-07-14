@@ -91,6 +91,8 @@ def echoreas(e1, e2):
     if not request.get_cookie(echoarea):
         response.set_cookie(echoarea, api.get_last_msgid(echoarea), max_age=180*24*60*60, secret='some-secret-key')
     last = request.get_cookie(echoarea, secret='some-secret-key')
+    if not last in api.get_echo_msgids(echoarea):
+        last = False
     if not last or len(last) == 0:
         last = api.get_last_msgid(echoarea)
     index = api.get_echoarea(echoarea)
@@ -133,7 +135,8 @@ def showmsg(msgid):
             index = api.get_echoarea(echoarea[0])
             current = index.index(msgid)
             response.set_cookie(echoarea[0], msgid, max_age=180*24*60*60, secret='some-secret-key')
-            return template("tpl/message.tpl", nodename=api.nodename, echoarea=echoarea, index=index, msgid=msgid, repto=repto, current=current, time=t, point=point, address=address, to=to, subj=subj, body=body, msgfrom=msgfrom, background=api.background)
+            auth = request.get_cookie("authstr")
+            return template("tpl/message.tpl", nodename=api.nodename, echoarea=echoarea, index=index, msgid=msgid, repto=repto, current=current, time=t, point=point, address=address, to=to, subj=subj, body=body, msgfrom=msgfrom, background=api.background, auth=auth)
         else:
             redirect("/")
     else:
@@ -247,6 +250,15 @@ def filelist():
 def download(filename):
     filename = filename.split("/")
     return static_file(filename[-1], "files/%s" % "/".join(filename[:-1]))
+
+@route("/s/blacklisted/<msgid>")
+def blacklist(msgid):
+    if api.msg_filter(msgid):
+        auth = request.get_cookie("authstr")
+        if points.is_operator(auth):
+            api.delete_msg(msgid)
+            open("blacklist.txt", "a").write(msgid)
+    redirect("/")
 
 @route("/login")
 @post("/login")

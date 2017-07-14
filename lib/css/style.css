@@ -219,7 +219,7 @@ hr {
     font-size: 0;
 }
 
-.echo-button {
+.echo-button, .blacklisted {
     display: inline-block;
     background: #43ac6a;
     color: #ffffff;
@@ -236,6 +236,16 @@ hr {
 
 .echo-button:hover {
     background: #368a55;
+}
+
+.blacklisted {
+    background: #ec5840;
+    float: left;
+    margin: -16px -44px;
+}
+
+.blacklisted:hover {
+    background: #da3116;
 }
 
 .echo-button-disabled {

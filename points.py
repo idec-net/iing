@@ -33,6 +33,16 @@ def login(user, password):
     except:
         return False
 
+def is_operator(auth):
+    points = open("points.txt", "r").read().split("\n")
+    for point in points:
+        row = point.split(":")
+        if len(row) > 4 and auth == row[1]:
+            flags = row[4].split(",")
+            if "OP" in flags:
+                return True
+    return False
+
 def sha(s):
     return hashlib.sha256(s.encode("utf-8")).hexdigest()[:16]
 

@@ -131,6 +131,10 @@ def get_last_msgid(echoarea):
     except:
         return []
 
+def delete_msg(msgid):
+    c.execute("DELETE FROM msg WHERE msgid = ?", (msgid,))
+    con.commit()
+
 def formatted_time(timestamp):
     return time.strftime("%d.%m.%y %H:%M UTC", time.gmtime(int(timestamp)))
 

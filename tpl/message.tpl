@@ -1,4 +1,4 @@
-%import api, re
+%import api, re, points
 %include tpl/header.tpl nodename=nodename, background=background
 
 <div id="panel">
@@ -75,6 +75,9 @@
 <tr>
 <td>
 <div class="single-message">
+%if points.is_operator(auth):
+<a class="blacklisted" href="/s/blacklisted/{{msgid}}" title="Поместить сообщение в ЧС"><i class="fa fa-trash"></i></a>
+%end
 <div id="echo-buttons">
 %if current > 0:
 <a href="/{{index[0]}}" class="echo-button" title="В начало"><i class="fa fa-fast-backward"></i></a>
