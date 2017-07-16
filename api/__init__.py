@@ -109,7 +109,7 @@ def get_echoarea(echoarea):
 def get_msg(msgid):
     try:
         row = c.execute("SELECT tags, echoarea, time, fr, addr, t, subject, body FROM msg WHERE msgid = ?;", (msgid,)).fetchone()
-        return "\n".join([row[0], row[1], str(row[2]), row[3], row[4], row[5], row[6], row[7]])
+        return "\n".join([row[0], row[1], str(row[2]), row[3], row[4], row[5], row[6], "", row[7]])
     except:
         return ""
 
@@ -193,7 +193,7 @@ def toss_msg(msgfrom, addr, tmsg):
             if len(msg) <= 65535:
                 h = hsh(msg)
                 msg = msg.split("\n")
-                c.execute("INSERT INTO msg (msgid, tags, echoarea, time, fr, addr, t, subject, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", (h, msg[0], msg[1], msg[2], msg[3], msg[4], msg[5], msg[6], "\n".join(msg[7:])))
+                c.execute("INSERT INTO msg (msgid, tags, echoarea, time, fr, addr, t, subject, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", (h, msg[0], msg[1], msg[2], msg[3], msg[4], msg[5], msg[6], "\n".join(msg[8:])))
                 con.commit()
                 return "msg ok:" + h
             else:

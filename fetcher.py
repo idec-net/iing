@@ -170,7 +170,7 @@ def debundle(bundle):
             msgid = m[0]
             if len(msgid) == 20 and m[1]:
                 msg = base64.b64decode(m[1].encode("ascii")).decode("utf8").split("\n")
-                c.execute("INSERT INTO msg (msgid, tags, echoarea, time, fr, addr, t, subject, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", (msgid, msg[0], msg[1], msg[2], msg[3], msg[4], msg[5], msg[6], "\n".join(msg[7:])))
+                c.execute("INSERT INTO msg (msgid, tags, echoarea, time, fr, addr, t, subject, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", (msgid, msg[0], msg[1], msg[2], msg[3], msg[4], msg[5], msg[6], "\n".join(msg[8:])))
     con.commit()
 
 def echo_filter(ea):
