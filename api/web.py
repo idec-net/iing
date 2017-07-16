@@ -57,15 +57,18 @@ def echolist():
             subscription.append(ea[0])
         response.set_cookie("subscription", subscription, path="/", max_age=180*24*60*60, secret='some-secret-key')
         s = subscription
-    subscription = []
-    for ea in s:
-        flag = False
-        for e in api.echoareas:
-            if ea in e:
-                flag = True
-                subscription.append(e)
-        if not flag:
-            subscription.append([ea, ""])
+    if api.nosubscription:
+        subscription = api.echoareas
+    else:
+        subscription = []
+        for ea in s:
+            flag = False
+            for e in api.echoareas:
+                if ea in e:
+                    flag = True
+                    subscription.append(e)
+            if not flag:
+                subscription.append([ea, ""])
     allechoareas = []
     for echoarea in subscription:
         temp = echoarea
@@ -83,7 +86,7 @@ def echolist():
         allechoareas.append(temp)
     auth = request.get_cookie("authstr")
     msgfrom, addr = points.check_point(auth)
-    return template("tpl/echolist.tpl", nodename=api.nodename, dsc=api.nodedsc, allechoareas=allechoareas, addr=addr, auth=auth, background=api.background)
+    return template("tpl/echolist.tpl", nodename=api.nodename, dsc=api.nodedsc, allechoareas=allechoareas, addr=addr, auth=auth, background=api.background, nosubscription=api.nosubscription)
 
 @route("/<e1>.<e2>")
 def echoreas(e1, e2):

@@ -5,7 +5,9 @@
 <a href="/" class="button"><i class="fa fa-home"></i><span class="caption"> Главная</span></a>
 <div id="rbuttons">
 <a href="http://ii-net.tk/" class="button"><i class="fa fa-info-circle"></i><span class="caption"> О нас</span></a>
+%if not nosubscription:
 <a href="/s/subscription" class="button"><i class="fa fa-paper-plane"></i><span class="caption"> Подписки</span></a>
+%end
 <a href="/s/filelist" class="button"><i class="fa fa-floppy-o"></i><span class="caption"> Файлы</span></a>
 %if addr:
 <a href="/logout" class="button"><i class="fa fa-sign-out"></i><span class="caption"> Выйти</span></a>
