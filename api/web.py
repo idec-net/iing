@@ -260,7 +260,7 @@ def blacklist(msgid):
         auth = request.get_cookie("authstr")
         if points.is_operator(auth):
             api.delete_msg(msgid)
-            open("blacklist.txt", "a").write(msgid)
+            open("blacklist.txt", "a").write(msgid + "\n")
     redirect("/")
 
 @route("/login")

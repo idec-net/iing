@@ -35,6 +35,7 @@ ue = False
 xc = False
 to = False
 depth = "200"
+blacklist = []
 
 def load_config():
     auth = ""
@@ -187,7 +188,7 @@ def get_mail():
         if echo_filter(line):
             local_index = get_echoarea(line)
         else:
-            if not line in local_index:
+            if not line in local_index and not line in blacklist:
                 fetch_msg_list.append(line)
     msg_list_len = str(len(fetch_msg_list))
     if len(fetch_msg_list) > 0:
@@ -321,6 +322,12 @@ if not "-n" in args and not "-e" in args and not os.path.exists(config):
     quit()
 
 check_directories()
+try:
+    for line in open("blacklist.txt", "r").read().split("\n"):
+        if len(line) > 0:
+            blacklist.append(line)
+except:
+    None
 if not "-n" in args or not "-e" in args:
     node, depth, echoareas, fechoareas = load_config()
 print("Работа с " + node)
