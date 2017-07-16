@@ -413,6 +413,7 @@ textarea {
     left: 0;
     bottom: 0;
     opacity: 0.5;
+    display: none;
 }
 
 @media all and (max-width: 600px) {
