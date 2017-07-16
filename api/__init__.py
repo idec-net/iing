@@ -210,7 +210,7 @@ def body_render(body):
     body = rr.sub(r"<span class='quote'>\1</span>", body)
     rr = re.compile("((^|\n)(PS|P.S|ps|ЗЫ|З.Ы|\/\/|#).*)")
     body = rr.sub(r"\n<span class='comment'>\1</span>", body)
-    rr = re.compile("((http|https|ftp):\/\/[a-z_0-9-.]+\\.[a-z]{2,5}(\/[^ \t<>\n\r]+)?\/?)")
+    rr = re.compile("((http|https|ftp):\/\/[a-z_0-9\-.:]+(\/[^ \t<>\n\r]+)?\/?)")
     body = rr.sub(r"<span class='url'><a target='_blank' href='\1'><i class='fa fa-link'></i> \1</a></span>", body)
     rr = re.compile("(ii:\/\/)([a-z0-9_!.-]{1,60}\.[a-z0-9_!.-]{1,59}[a-z0-9_!-])")
     body = rr.sub(r"<i class='fa fa-plane iilink'></i>&nbsp;<a class='iilink' href='\2'>\2</a>", body)
