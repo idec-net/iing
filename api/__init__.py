@@ -223,10 +223,10 @@ def body_render(body):
     body = "<br>\n".join(body.split("\n"))
     txt = ""; pre = 0
     for line in body.split("\n"):
-        if line == "====<br>" and pre == 0:
+        if line.startswith("====") and pre == 0:
             pre = 1
             txt += "<pre>====\n"
-        elif line == "====<br>" or line == "====" and pre == 1:
+        elif line.startswith("====") and pre == 1:
             pre = 0
             txt += "====</pre>\n"
         elif pre == 1:
