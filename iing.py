@@ -394,8 +394,8 @@ def fecho_post():
                     except:
                         size = "0"
                     copyfile("temp", "files/%s/%s" % (fecho, name))
-                    codecs.open("fecho/%s" % fecho, "a", "utf8").write("%s:%s:%s:%s,%s:%s\n" % (hsh, name, size, api.nodename, addr, dsc.replace("\n", " ")))
-                    codecs.open("files/indexes/files.txt", "a", "utf8").write("%s/%s:%s\n" % (fecho, name, dsc.replace("\n", " ")))
+                    codecs.open("fecho/%s" % fecho, "a", "utf8").write("%s:%s:%s:%s,%s:%s\n" % (hsh, name, size, api.nodename, addr, dsc.replace("\n", " ").replace("\r", "")))
+                    codecs.open("files/indexes/files.txt", "a", "utf8").write("%s/%s:%s\n" % (fecho, name, dsc.replace("\n", " ").replace("\r", "")))
                     return "file ok:%s" % hsh
                 else:
                     os.remove("./temp")
