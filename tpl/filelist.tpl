@@ -9,7 +9,6 @@
 </div><br>
 
 <div id="conferences" class="width90 files">
-ВНИМАНИЕ! Не передавайте никому ссылки с этой страницы. В них может содержаться ваш authkey.<br>
 <table border="0" cellpadding="0" cellspacing="0" id="filelist">
 %for file in files:
 <tr>
