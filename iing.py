@@ -396,12 +396,13 @@ def fecho_post():
                     copyfile("temp", "files/%s/%s" % (fecho, name))
                     codecs.open("fecho/%s" % fecho, "a", "utf8").write("%s:%s:%s:%s,%s:%s\n" % (hsh, name, size, api.nodename, addr, dsc.replace("\n", " ")))
                     codecs.open("files/indexes/files.txt", "a", "utf8").write("%s/%s:%s\n" % (fecho, name, dsc.replace("\n", " ")))
+                    return "file ok:%s" % hsh
                 else:
                     os.remove("./temp")
                     return "file exists"
                 os.remove("./temp")
             else:
-                return "auth error!"
+                return "error: no auth"
         else:
             return "incorrect file echoarea"
 
