@@ -26,7 +26,7 @@
 </script>
 
 <div id="panel">
-<span id="container"><h3 id="nodedsc"><img src="/lib/idec_grey.png" width="20"> {{dsc}}</h3></span>
+<span id="container"><h3 id="nodedsc"><a href="/"><img src="/lib/idec_grey.png" width="20"> {{dsc}}</a></h3></span>
 <a href="/echolist" id="echolist-button" class="button"><i class="fa fa-bars"></i></a>
 <div id="rbuttons">
 <a href="http://ii-net.tk/" class="button"><i class="fa fa-info-circle"></i><span class="caption"> О нас</span></a>

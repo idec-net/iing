@@ -26,6 +26,11 @@ html, body {
     margin: 0 0 0 15px;
 }
 
+#panel a {
+    color: #dddddd;
+    text-decoration: none;
+}
+
 #container {
     display: inline-block;
     position: absolute;
