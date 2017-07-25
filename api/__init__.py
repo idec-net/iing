@@ -117,8 +117,13 @@ def get_msg(msgid):
         return ""
 
 def get_echoarea_count(echoarea):
-    row = c.execute("SELECT COUNT(1) FROM msg WHERE echoarea = ?;", (echoarea,)).fetchone()
-    return row[0]
+    r = 0
+    blacklist = open("blacklist.txt", "r").read().split("\n")
+    q = c.execute("SELECT msgid FROM msg WHERE echoarea = ?;", (echoarea,))
+    for row in q:
+        if not row[0] in blacklist:
+            r += 1
+    return r
 
 def get_last_msg(echoarea):
     try:

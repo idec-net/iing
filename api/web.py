@@ -50,7 +50,7 @@ def index():
         else:
             new = 0
         last = request.get_cookie(echoarea[0], secret='some-secret-key')
-        if not last in api.get_echo_msgids(echoarea[0]):
+        if not last in api.get_echoarea(echoarea[0]):
             last = False
         if not last or len(last) == 0:
             last = api.get_last_msgid(echoarea[0])
@@ -107,7 +107,7 @@ def echolist():
         else:
             new = 0
         last = request.get_cookie(echoarea[0], secret='some-secret-key')
-        if not last in api.get_echo_msgids(echoarea[0]):
+        if not last in api.get_echoarea(echoarea[0]):
             last = False
         if not last or len(last) == 0:
             last = api.get_last_msgid(echoarea[0])
@@ -132,7 +132,7 @@ def ffeed(echoarea, msgid, page):
     msglist = api.get_echoarea(echoarea)
     result = []
     last = request.get_cookie(echoarea, secret='some-secret-key')
-    if not last in api.get_echo_msgids(echoarea):
+    if not last in api.get_echoarea(echoarea):
         last = False
     if not last or len(last) == 0:
         last = api.get_last_msgid(echoarea)
@@ -176,7 +176,7 @@ def echoreas(e1, e2, msgid=False, page=False):
     else:
         feed = int(feed)
     last = request.get_cookie(echoarea, secret='some-secret-key')
-    if not last in api.get_echo_msgids(echoarea):
+    if not last in api.get_echoarea(echoarea):
         last = False
     if not last or len(last) == 0:
         last = api.get_last_msgid(echoarea)
