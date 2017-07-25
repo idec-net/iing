@@ -39,7 +39,7 @@
 <a class="blacklisted" href="/s/blacklisted/{{msg[0]}}" title="Поместить сообщение в ЧС"><i class="fa fa-trash"></i></a>
 %end
 
-%kludges = msgs[1][0].split("/")
+%kludges = msg[1][0].split("/")
 %if "repto" in kludges:
 %repto = kludges[kludges.index("repto") + 1]
 %else:
