@@ -405,6 +405,16 @@ def registration():
     else:
         redirect("/")
 
+@route("/rss/<echoarea>")
+def rss(echoarea):
+    response.set_header("content-type", "application/rss+xml; charset=utf-8")
+    api.load_config()
+    msglist = api.get_echoarea(echoarea)
+    msgs = []
+    for msgid in msglist[-50:]:
+        msgs.append([msgid, api.get_msg(msgid).split("\n")])
+    return template("tpl/rss.tpl", nodename=api.nodename, dsc=api.nodedsc, nodeurl=api.nodeurl, msgs=msgs, echoarea=echoarea)
+
 @route("/lib/css/<filename>")
 def pcss(filename):
     return static_file(filename, root="lib/css/")

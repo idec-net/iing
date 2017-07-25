@@ -51,9 +51,10 @@ def init():
         open("points.txt", "w")
 
 def load_config():
-    global nodename, nodedsc, echoareas, fechoareas, shortareas, web_interface, background, norobots, registration, nosubscription
+    global nodename, nodedsc, nodeurl, echoareas, fechoareas, shortareas, web_interface, background, norobots, registration, nosubscription
     nodename = ""
     nodedsc = ""
+    nodeurl = ""
     background = []
     echoareas = []
     fechoareas = []
@@ -70,6 +71,8 @@ def load_config():
             nodename = param[1]
         elif param[0] == "nodedsc":
             nodedsc = " ".join(param[1:])
+        elif param[0] == "nodeurl":
+            nodeurl = " ".join(param[1:])
         elif param[0] == "echo":
             echoareas.append([param[1], " ".join(param[2:])])
         elif param[0] == "fecho":
@@ -137,6 +140,9 @@ def delete_msg(msgid):
 
 def formatted_time(timestamp):
     return time.strftime("%d.%m.%y %H:%M UTC", time.gmtime(int(timestamp)))
+
+def rss_time(timestamp):
+    return time.strftime("%a, %d %b %Y %H:%M:%S UTC", time.gmtime(int(timestamp)))
 
 def get_time(echoarea):
     try:
