@@ -421,7 +421,7 @@ def rss(echoarea):
     msgs = []
     for msgid in msglist[-50:]:
         msgs.append([msgid, api.get_msg(msgid).split("\n")])
-    return template("tpl/rss.tpl", nodename=api.nodename, dsc=api.nodedsc, nodeurl=api.nodeurl, msgs=msgs, echoarea=echoarea)
+    return template("tpl/rss.tpl", nodename=api.nodename, dsc=api.nodedsc, nodeurl=api.nodeurl, msgs=reversed(msgs), echoarea=echoarea)
 
 @route("/lib/css/<filename>")
 def pcss(filename):
