@@ -113,11 +113,14 @@ def echolist():
             last = api.get_last_msgid(echoarea[0])
         temp.append(new)
         temp.append(last)
-        temp.append(math.floor(api.get_echoarea(echoarea[0]).index(last) / 50))
+        if len(last) > 0:
+            temp.append(math.floor(api.get_echoarea(echoarea[0]).index(last) / 50) + 1)
+        else:
+            temp.append(math.floor(len(api.get_echoarea(echoarea[0])) / 50) + 1)
         allechoareas.append(temp)
     auth = request.get_cookie("authstr")
     msgfrom, addr = points.check_point(auth)
-    feed = int(request.get_cookie("feed", secret='some-secret-key'))
+    feed = request.get_cookie("feed", secret='some-secret-key')
     if not feed:
         feed = 1
     else:
@@ -153,7 +156,7 @@ def ffeed(echoarea, msgid, page):
     else:
         ea = ea[0]
     auth = request.get_cookie("authstr")
-    if len(msglist) < end:
+    if len(msglist) <= end:
         end = len(msglist)-1
     response.set_cookie(echoarea, msglist[end], path="/", max_age=180*24*60*60, secret='some-secret-key')
     return template("tpl/feed.tpl", nodename=api.nodename, dsc=api.nodedsc, echoarea=ea, page=page, msgs=result, msgid=msgid, background=api.background, auth=auth)
