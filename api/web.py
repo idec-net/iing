@@ -26,7 +26,12 @@ def index():
                 subscription.append([ea, ""])
     ea = [[echoarea[0], echoarea[1], api.get_time(echoarea[0])] for echoarea in subscription]
     for echoarea in sorted(ea, key=lambda ea: ea[2], reverse=True)[0:5]:
-        echoareas.append({"echoname": echoarea[0], "count": api.get_echoarea_count(echoarea[0]), "dsc": echoarea[1], "msg": api.get_last_msg(echoarea[0])})
+        last = request.get_cookie(echoarea[0], secret='some-secret-key')
+        if not last in api.get_echo_msgids(echoarea[0]):
+            last = False
+        if not last or len(last) == 0:
+            last = api.get_last_msgid(echoarea[0])
+        echoareas.append({"echoname": echoarea[0], "count": api.get_echoarea_count(echoarea[0]), "dsc": echoarea[1], "msg": api.get_last_msg(echoarea[0]), "last": last})
     allechoareas = []
     for echoarea in subscription:
         temp = echoarea
@@ -44,7 +49,7 @@ def index():
         if not last in api.get_echo_msgids(echoarea[0]):
             last = False
         if not last or len(last) == 0:
-            last = api.get_last_msgid(echoarea)
+            last = api.get_last_msgid(echoarea[0])
         temp.append(new)
         temp.append(last)
         if len(last) > 0:
@@ -101,7 +106,7 @@ def echolist():
         if not last in api.get_echo_msgids(echoarea[0]):
             last = False
         if not last or len(last) == 0:
-            last = api.get_last_msgid(echoarea)
+            last = api.get_last_msgid(echoarea[0])
         temp.append(new)
         temp.append(last)
         temp.append(math.ceil(api.get_echoarea(echoarea[0]).index(last) / 50))
@@ -115,7 +120,7 @@ def echolist():
         feed = int(feed)
     return template("tpl/echolist.tpl", nodename=api.nodename, dsc=api.nodedsc, allechoareas=allechoareas, addr=addr, auth=auth, background=api.background, nosubscription=api.nosubscription, feed=feed)
 
-def ffeed(echoarea, page):
+def ffeed(echoarea, msgid, page):
     api.load_config()
     msglist = api.get_echoarea(echoarea)
     result = []
@@ -147,10 +152,11 @@ def ffeed(echoarea, page):
     if len(msglist) < end:
         end = len(msglist)-1
     response.set_cookie(echoarea, msglist[end], max_age=180*24*60*60, secret='some-secret-key')
-    return template("tpl/feed.tpl", nodename=api.nodename, dsc=api.nodedsc, echoarea=ea, page=page, msgs=result, background=api.background, auth=auth)
+    return template("tpl/feed.tpl", nodename=api.nodename, dsc=api.nodedsc, echoarea=ea, page=page, msgs=result, msgid=msgid, background=api.background, auth=auth)
 
 @route("/<e1>.<e2>")
 @route("/<e1>.<e2>/<page>")
+@route("/<e1>.<e2>/<page>/<msgid>")
 def echoreas(e1, e2, msgid=False, page=False):
     echoarea=e1 + "." + e2
     if not request.get_cookie(echoarea):
@@ -175,7 +181,7 @@ def echoreas(e1, e2, msgid=False, page=False):
             if feed == 0:
                 redirect("/" + last)
             else:
-                return ffeed(echoarea, page)
+                return ffeed(echoarea, last, page)
         else:
             redirect("/new/" + echoarea)
 

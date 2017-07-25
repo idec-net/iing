@@ -25,7 +25,11 @@
 <td>
 %for msg in msgs:
 <a name="{{msg[0]}}"></a>
+%if msg[0] == msgid:
+<div class="single-message current-message">
+%else:
 <div class="single-message">
+%end
 <div id="echo-buttons">
 <a href="/reply/{{echoarea[0]}}/{{msg[0]}}" class="echo-button" title="Ответить"><i class="fa fa-reply"></i></a>
 </div>
