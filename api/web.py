@@ -31,7 +31,11 @@ def index():
             last = False
         if not last or len(last) == 0:
             last = api.get_last_msgid(echoarea[0])
-        echoareas.append({"echoname": echoarea[0], "count": api.get_echoarea_count(echoarea[0]), "dsc": echoarea[1], "msg": api.get_last_msg(echoarea[0]), "last": last})
+        if len(last) > 0:
+            page = math.floor(api.get_echoarea(echoarea[0]).index(last) / 50)
+        else:
+            page = math.floor(len(api.get_echoarea(echoarea[0])) / 50)
+        echoareas.append({"echoname": echoarea[0], "count": api.get_echoarea_count(echoarea[0]), "dsc": echoarea[1], "msg": api.get_last_msg(echoarea[0]), "last": last, "page": page})
     allechoareas = []
     for echoarea in subscription:
         temp = echoarea
@@ -53,9 +57,9 @@ def index():
         temp.append(new)
         temp.append(last)
         if len(last) > 0:
-            temp.append(math.ceil(api.get_echoarea(echoarea[0]).index(last) / 50))
+            temp.append(math.floor(api.get_echoarea(echoarea[0]).index(last) / 50))
         else:
-            temp.append(math.ceil(len(api.get_echoarea(echoarea[0])) / 50))
+            temp.append(math.floor(len(api.get_echoarea(echoarea[0])) / 50))
         allechoareas.append(temp)
     auth = request.get_cookie("authstr")
     msgfrom, addr = points.check_point(auth)
@@ -109,7 +113,7 @@ def echolist():
             last = api.get_last_msgid(echoarea[0])
         temp.append(new)
         temp.append(last)
-        temp.append(math.ceil(api.get_echoarea(echoarea[0]).index(last) / 50))
+        temp.append(math.floor(api.get_echoarea(echoarea[0]).index(last) / 50))
         allechoareas.append(temp)
     auth = request.get_cookie("authstr")
     msgfrom, addr = points.check_point(auth)
@@ -131,11 +135,11 @@ def ffeed(echoarea, msgid, page):
         last = api.get_last_msgid(echoarea)
     if not page:
         if not last:
-            page = math.ceil(len(msglist) / 50)
+            page = math.floor(len(msglist) / 50) + 1
             if page == 0:
                 page = 1
         else:
-            page = math.ceil(msglist.index(last) / 50)
+            page = math.floor(msglist.index(last) / 50) + 1
     page = int(page)
     start = page * 50 - 50
     end = start + 50
@@ -222,9 +226,9 @@ def showmsg(msgid):
                 feed = int(feed)
             if feed == 1:
                 try:
-                    page = math.ceil(api.get_echoarea(echoarea[0]).index(msgid) / 50)
+                    page = math.floor(api.get_echoarea(echoarea[0]).index(msgid) / 50) + 1
                 except:
-                    page = math.ceil(api.get_echoarea_count(echoarea[0]) / 50)
+                    page = math.floor(api.get_echoarea_count(echoarea[0]) / 50) + 1
             else:
                 page = False
             return template("tpl/message.tpl", nodename=api.nodename, echoarea=echoarea, index=index, msgid=msgid, repto=repto, current=current, time=t, point=point, address=address, to=to, subj=subj, body=body, msgfrom=msgfrom, background=api.background, auth=auth, feed=feed, page=page)
@@ -252,9 +256,9 @@ def msg_list(echoarea, page=False, msgid=False):
     ea = [ea for ea in api.echoareas if ea[0] == echoarea][0]
     if not page:
         if not msgid:
-            page = math.ceil(len(msglist) / 50)
+            page = math.floor(len(msglist) / 50) + 1
         else:
-            page = math.ceil(msglist.index(msgid) / 50)
+            page = math.floor(msglist.index(msgid) / 50) + 1
         if page == 0:
             page = 1
     return template("tpl/msglist.tpl", nodename=api.nodename, dsc=api.nodedsc, page=int(page), echoarea=ea, msgid=msgid, msglist=result, topiclist=False, background=api.background)

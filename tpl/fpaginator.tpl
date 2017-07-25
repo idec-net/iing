@@ -1,10 +1,5 @@
 %import math, api
-%pages = math.ceil(api.get_echoarea_count(echoarea) / onpage)
-%if pages - math.floor(pages) > 0:
-%pages = math.floor(pages) + 1
-%else:
-%pages = math.floor(pages)
-%end
+%pages = math.floor(api.get_echoarea_count(echoarea) / onpage) + 1
 %if pages > 1:
 <center>
 %for i in range(1, pages + 1):
