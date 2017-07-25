@@ -353,7 +353,11 @@ def login():
 def profile():
     auth = request.get_cookie("authstr")
     username, addr = points.check_point(auth)
-    feed = int(request.get_cookie("feed", secret='some-secret-key'))
+    feed = request.get_cookie("feed", secret='some-secret-key')
+    if not feed:
+        feed = 1
+    else:
+        feed = int(feed)
     return template("tpl/profile.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, username=username, auth=auth, addr=addr, feed=feed)
 
 @route("/logout")
