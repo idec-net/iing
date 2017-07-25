@@ -157,8 +157,10 @@ def ffeed(echoarea, msgid, page):
         ea = ea[0]
     auth = request.get_cookie("authstr")
     if len(msglist) <= end:
-        end = len(msglist)-1
-    response.set_cookie(echoarea, msglist[end], path="/", max_age=180*24*60*60, secret='some-secret-key')
+        end = api.get_last_msgid(echoarea)
+    else:
+        end = msglist[end]
+    response.set_cookie(echoarea, end, path="/", max_age=180*24*60*60, secret='some-secret-key')
     return template("tpl/feed.tpl", nodename=api.nodename, dsc=api.nodedsc, echoarea=ea, page=page, msgs=result, msgid=msgid, background=api.background, auth=auth)
 
 @route("/<e1>.<e2>")
