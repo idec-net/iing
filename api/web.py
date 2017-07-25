@@ -57,9 +57,9 @@ def index():
         temp.append(new)
         temp.append(last)
         if len(last) > 0:
-            temp.append(math.floor(api.get_echoarea(echoarea[0]).index(last) / 50)) + 1
+            temp.append(math.floor(api.get_echoarea(echoarea[0]).index(last) / 50) + 1)
         else:
-            temp.append(math.floor(len(api.get_echoarea(echoarea[0])) / 50)) + 1
+            temp.append(math.floor(len(api.get_echoarea(echoarea[0])) / 50) + 1)
         allechoareas.append(temp)
     auth = request.get_cookie("authstr")
     msgfrom, addr = points.check_point(auth)
