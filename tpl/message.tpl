@@ -8,13 +8,8 @@
 </div>
 <h3><span class="caption"><i class="fa fa-comments"></i> {{echoarea[0]}}: {{echoarea[1]}}</span></h3>
 <div id="rbuttons">
-<a href="/msglist/{{echoarea[0]}}/{{msgid}}" class="button"><i class="fa fa-list"></i><span class="caption"> Список</span></a>
 <a href="/new/{{echoarea[0]}}" class="button"><i class="fa fa-plus-circle"></i><span class="caption"> Новое</span></a>
-%if msgfrom:
-<a href="/profile" class="button"><i class="fa fa-user"></i><span class="caption"> Профиль</span></a>
-%else:
-<a href="/login" class="button"><i class="fa fa-sign-in"></i><span class="caption"> Войти</span></a>
-%end
+<a href="/msglist/{{echoarea[0]}}/{{msgid}}" class="button"><i class="fa fa-list"></i><span class="caption"> Список</span></a>
 </div>
 </div>
 
