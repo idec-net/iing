@@ -168,13 +168,18 @@ def echoreas(e1, e2, msgid=False, page=False):
     echoarea=e1 + "." + e2
     if not request.get_cookie(echoarea):
         response.set_cookie(echoarea, api.get_last_msgid(echoarea), max_age=180*24*60*60, secret='some-secret-key')
+    feed = request.get_cookie("feed", secret='some-secret-key')
+    if not feed:
+        feed = 1
+    else:
+        feed = int(feed)
     last = request.get_cookie(echoarea, secret='some-secret-key')
     if not last in api.get_echo_msgids(echoarea):
         last = False
     if not last or len(last) == 0:
         last = api.get_last_msgid(echoarea)
     index = api.get_echoarea(echoarea)
-    if len(index) > 0 and index[-1] != last and last in index:
+    if feed == 0 and len(index) > 0 and index[-1] != last and last in index:
         last = index[index.index(last) + 1]
     if len(index) == 0:
         last = False

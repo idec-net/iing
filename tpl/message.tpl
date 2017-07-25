@@ -7,7 +7,7 @@
 <a href="/echolist" id="echolist-button" class="button"><i class="fa fa-bars"></i></a>
 </div>
 %if feed == 1:
-<a href="/{{echoarea[0]}}/{{page}}/{{msgid}}#{{msgid}}"><h3><span class="caption"><i class="fa fa-comments"></i> {{echoarea[0]}}: {{echoarea[1]}}</span></h3></a>
+<a href="/{{echoarea[0]}}/{{page}}/{{msgid}}#{{msgid}}"><h3><i class="fa fa-comments"></i><span class="caption"> {{echoarea[0]}}: {{echoarea[1]}}</span></h3></a>
 %else:
 <h3><span class="caption"><i class="fa fa-comments"></i> {{echoarea[0]}}: {{echoarea[1]}}</span></h3>
 %end
