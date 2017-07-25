@@ -31,11 +31,9 @@
 %end
 %else:
 %if feed == 1 and echoarea[3]:
-<a href="/{{echoarea[0]}}/{{echoarea[4]}}/{{echoarea[3]}}#{{echoarea[3]}}" class="new-button-link echo-button-link" title="{{echoarea[1]}}"><i class="fa fa-comments"></i>
- {{echoarea[0]}}<span class="unread">0</span></a>
+<a href="/{{echoarea[0]}}/{{echoarea[4]}}/{{echoarea[3]}}#{{echoarea[3]}}" class="new-button-link" title="{{echoarea[1]}}"><i class="fa fa-comments"></i> {{echoarea[0]}}<span class="unread">{{echoarea[2]}}</span></a>
 %else:
-<a href="/{{echoarea[0]}}" class="new-button-link echo-button-link" title="{{echoarea[1]}}"><i class="fa fa-comments"></i>
- {{echoarea[0]}}<span class="unread">0</span></a>
+<a href="/{{echoarea[0]}}" class="new-button-link" title="{{echoarea[1]}}"><i class="fa fa-comments"></i> {{echoarea[0]}}<span class="unread">{{echoarea[2]}}</span></a>
 %end
 %end
 %end
