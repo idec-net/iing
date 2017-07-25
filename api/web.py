@@ -215,7 +215,19 @@ def showmsg(msgid):
             current = index.index(msgid)
             response.set_cookie(echoarea[0], msgid, max_age=180*24*60*60, secret='some-secret-key')
             auth = request.get_cookie("authstr")
-            return template("tpl/message.tpl", nodename=api.nodename, echoarea=echoarea, index=index, msgid=msgid, repto=repto, current=current, time=t, point=point, address=address, to=to, subj=subj, body=body, msgfrom=msgfrom, background=api.background, auth=auth)
+            feed = request.get_cookie("feed", secret='some-secret-key')
+            if not feed:
+                feed = 1
+            else:
+                feed = int(feed)
+            if feed == 1:
+                try:
+                    page = math.ceil(api.get_echoarea(echoarea[0]).index(msgid) / 50)
+                except:
+                    page = math.ceil(api.get_echoarea_count(echoarea[0]) / 50)
+            else:
+                page = False
+            return template("tpl/message.tpl", nodename=api.nodename, echoarea=echoarea, index=index, msgid=msgid, repto=repto, current=current, time=t, point=point, address=address, to=to, subj=subj, body=body, msgfrom=msgfrom, background=api.background, auth=auth, feed=feed, page=page)
         else:
             redirect("/")
     else:

@@ -31,6 +31,7 @@
 <div class="single-message">
 %end
 <div id="echo-buttons">
+<a href="/{{msg[0]}}" class="echo-button" title="Ссылка на сообщение"><i class="fa fa-eye"></i></a>
 <a href="/reply/{{echoarea[0]}}/{{msg[0]}}" class="echo-button" title="Ответить"><i class="fa fa-reply"></i></a>
 </div>
 %if points.is_operator(auth):
