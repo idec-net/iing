@@ -32,9 +32,9 @@ def index():
         if not last or len(last) == 0:
             last = api.get_last_msgid(echoarea[0])
         if len(last) > 0:
-            page = math.floor(api.get_echoarea(echoarea[0]).index(last) / 50)
+            page = math.floor(api.get_echoarea(echoarea[0]).index(last) / 50) + 1
         else:
-            page = math.floor(len(api.get_echoarea(echoarea[0])) / 50)
+            page = math.floor(len(api.get_echoarea(echoarea[0])) / 50) + 1
         echoareas.append({"echoname": echoarea[0], "count": api.get_echoarea_count(echoarea[0]), "dsc": echoarea[1], "msg": api.get_last_msg(echoarea[0]), "last": last, "page": page})
     allechoareas = []
     for echoarea in subscription:
@@ -57,9 +57,9 @@ def index():
         temp.append(new)
         temp.append(last)
         if len(last) > 0:
-            temp.append(math.floor(api.get_echoarea(echoarea[0]).index(last) / 50))
+            temp.append(math.floor(api.get_echoarea(echoarea[0]).index(last) / 50)) + 1
         else:
-            temp.append(math.floor(len(api.get_echoarea(echoarea[0])) / 50))
+            temp.append(math.floor(len(api.get_echoarea(echoarea[0])) / 50)) + 1
         allechoareas.append(temp)
     auth = request.get_cookie("authstr")
     msgfrom, addr = points.check_point(auth)
