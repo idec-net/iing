@@ -1,6 +1,39 @@
 import api, points, base64, math
 from api.bottle import *
 
+def get_page(n):
+    return math.ceil(n / 50)
+
+def echoes(subscription):
+    allechoareas = []
+    for echoarea in subscription:
+        temp = echoarea
+        if not request.get_cookie(echoarea[0]):
+            response.set_cookie(echoarea[0], api.get_last_msgid(echoarea[0]), path="/", max_age=180*24*60*60, secret='some-secret-key')
+        current = request.get_cookie(echoarea[0], secret='some-secret-key')
+        if not current:
+            current = api.get_last_msgid(echoarea[0])
+        echoarea_msglist = api.get_echoarea(echoarea[0])
+
+        if len(echoarea_msglist) > 0 and current in echoarea_msglist:
+            new = int(api.get_echoarea_count(echoarea[0])) - echoarea_msglist.index(current) - 1
+        else:
+            new = 0
+
+        if new > 0:
+            last = echoarea_msglist[-new];
+        else:
+            last = echoarea_msglist[-1];
+
+        temp.append(new)
+        temp.append(last)
+        if len(last) > 0:
+            temp.append(get_page(api.get_echoarea(echoarea[0]).index(last)))
+        else:
+            temp.append(get_page(len(api.get_echoarea(echoarea[0]))))
+        allechoareas.append(temp)
+    return allechoareas
+
 @route("/")
 def index():
     api.load_config()
@@ -32,35 +65,11 @@ def index():
         if not last or len(last) == 0:
             last = api.get_last_msgid(echoarea[0])
         if len(last) > 0:
-            page = math.floor(api.get_echoarea(echoarea[0]).index(last) / 50) + 1
+            page = get_page(api.get_echoarea(echoarea[0]).index(last))
         else:
-            page = math.floor(len(api.get_echoarea(echoarea[0])) / 50) + 1
+            page = get_page(len(api.get_echoarea(echoarea[0])))
         echoareas.append({"echoname": echoarea[0], "count": api.get_echoarea_count(echoarea[0]), "dsc": echoarea[1], "msg": api.get_last_msg(echoarea[0]), "last": last, "page": page})
-    allechoareas = []
-    for echoarea in subscription:
-        temp = echoarea
-        if not request.get_cookie(echoarea[0]):
-            response.set_cookie(echoarea[0], api.get_last_msgid(echoarea[0]), path="/", max_age=180*24*60*60, secret='some-secret-key')
-        current = request.get_cookie(echoarea[0], secret='some-secret-key')
-        if not current:
-            current = api.get_last_msgid(echoarea[0])
-        echoarea_msglist = api.get_echoarea(echoarea[0])
-        if len(echoarea_msglist) > 0 and current in echoarea_msglist:
-            new = int(api.get_echoarea_count(echoarea[0])) - echoarea_msglist.index(current) - 1
-        else:
-            new = 0
-        last = request.get_cookie(echoarea[0], secret='some-secret-key')
-        if not last in api.get_echoarea(echoarea[0]):
-            last = False
-        if not last or len(last) == 0:
-            last = api.get_last_msgid(echoarea[0])
-        temp.append(new)
-        temp.append(last)
-        if len(last) > 0:
-            temp.append(math.floor(api.get_echoarea(echoarea[0]).index(last) / 50) + 1)
-        else:
-            temp.append(math.floor(len(api.get_echoarea(echoarea[0])) / 50) + 1)
-        allechoareas.append(temp)
+    allechoareas = echoes(subscription)
     auth = request.get_cookie("authstr")
     msgfrom, addr = points.check_point(auth)
     feed = request.get_cookie("feed", secret='some-secret-key')
@@ -93,31 +102,7 @@ def echolist():
                     subscription.append(e)
             if not flag:
                 subscription.append([ea, ""])
-    allechoareas = []
-    for echoarea in subscription:
-        temp = echoarea
-        if not request.get_cookie(echoarea[0]):
-            response.set_cookie(echoarea[0], api.get_last_msgid(echoarea[0]), path="/", max_age=180*24*60*60, secret='some-secret-key')
-        current = request.get_cookie(echoarea[0], secret='some-secret-key')
-        if not current:
-            current = api.get_last_msgid(echoarea[0])
-        echoarea_msglist = api.get_echoarea(echoarea[0])
-        if len(echoarea_msglist) > 0 and current in echoarea_msglist:
-            new = int(api.get_echoarea_count(echoarea[0])) - echoarea_msglist.index(current) - 1
-        else:
-            new = 0
-        last = request.get_cookie(echoarea[0], secret='some-secret-key')
-        if not last in api.get_echoarea(echoarea[0]):
-            last = False
-        if not last or len(last) == 0:
-            last = api.get_last_msgid(echoarea[0])
-        temp.append(new)
-        temp.append(last)
-        if len(last) > 0:
-            temp.append(math.floor(api.get_echoarea(echoarea[0]).index(last) / 50) + 1)
-        else:
-            temp.append(math.floor(len(api.get_echoarea(echoarea[0])) / 50) + 1)
-        allechoareas.append(temp)
+    allechoareas = echoes(subscription)
     auth = request.get_cookie("authstr")
     msgfrom, addr = points.check_point(auth)
     feed = request.get_cookie("feed", secret='some-secret-key')
@@ -138,11 +123,11 @@ def ffeed(echoarea, msgid, page):
         last = api.get_last_msgid(echoarea)
     if not page:
         if not last:
-            page = math.floor(len(msglist) / 50) + 1
+            page = get_page(len(msglist))
             if page == 0:
                 page = 1
         else:
-            page = math.floor(msglist.index(last) / 50) + 1
+            page = get_page(msglist.index(last))
     page = int(page)
     start = page * 50 - 50
     end = start + 50
@@ -175,7 +160,7 @@ def echoreas(e1, e2, msgid=False, page=False):
         feed = 1
     else:
         feed = int(feed)
-    last = request.get_cookie(echoarea, secret='some-secret-key')
+    last = msgid or request.get_cookie(echoarea, secret='some-secret-key')
     if not last in api.get_echoarea(echoarea):
         last = False
     if not last or len(last) == 0:
@@ -236,9 +221,9 @@ def showmsg(msgid):
                 feed = int(feed)
             if feed == 1:
                 try:
-                    page = math.floor(api.get_echoarea(echoarea[0]).index(msgid) / 50) + 1
+                    page = get_page(api.get_echoarea(echoarea[0]).index(msgid))
                 except:
-                    page = math.floor(api.get_echoarea_count(echoarea[0]) / 50) + 1
+                    page = get_page(api.get_echoarea_count(echoarea[0]))
             else:
                 page = False
             return template("tpl/message.tpl", nodename=api.nodename, echoarea=echoarea, index=index, msgid=msgid, repto=repto, current=current, time=t, point=point, address=address, to=to, subj=subj, body=body, msgfrom=msgfrom, background=api.background, auth=auth, feed=feed, page=page)
@@ -266,9 +251,9 @@ def msg_list(echoarea, page=False, msgid=False):
     ea = [ea for ea in api.echoareas if ea[0] == echoarea][0]
     if not page:
         if not msgid:
-            page = math.floor(len(msglist) / 50) + 1
+            page = get_page(len(msglist))
         else:
-            page = math.floor(msglist.index(msgid) / 50) + 1
+            page = get_page(msglist.index(msgid))
         if page == 0:
             page = 1
     return template("tpl/msglist.tpl", nodename=api.nodename, dsc=api.nodedsc, page=int(page), echoarea=ea, msgid=msgid, msglist=result, topiclist=False, background=api.background)

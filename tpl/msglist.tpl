@@ -14,12 +14,7 @@
 </div><br>
 
 %if not page:
-%page = len(msglist) / 50
-%if page - math.floor(page) > 0:
-%page = math.floor(page) + 1
-%else:
-%page = math.floor(page)
-%end
+%page = math.ceil(len(msglist) / 50)
 %end
 %include tpl/paginator.tpl echoarea=echoarea[0], msglist=msglist, page=page, onpage=50, shortlist=True
 %start = (page - 1) * 50
