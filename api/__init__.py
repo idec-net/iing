@@ -162,11 +162,24 @@ def echo_filter(ea):
 
 def fecho_filter(ea):
     rr = re.compile(r'^[a-z0-9_!.-]{3,120}$')
-    if rr.match(ea): return True
+    if rr.match(ea):
+        return True
+    else:
+        return False
 
 def msg_filter(msgid):
     rr = re.compile(r'^[a-z0-9A-Z]{20}$')
-    if rr.match(msgid): return True
+    if rr.match(msgid):
+        return True
+    else:
+        return False
+
+def file_filter(filename):
+    rr = re.compile(r'^[A-Za-z0-9_!-.]{1,60}.[A-Za-z0-9_!-]{1,60}$')
+    if rr.match(filename):
+        return True
+    else:
+        return False
 
 def hsh(msg):
     ret = base64.urlsafe_b64encode(hashlib.sha256(msg.encode()).digest()).decode("utf-8").replace("-", "A").replace("_", "z")[:20]

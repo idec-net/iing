@@ -357,6 +357,8 @@ def fecho_post():
     except:
         dsc = False
     if pauth and fecho and f and dsc:
+        if not api.file_filter(f.raw_filename):
+            return 'incorrect filename'
         if api.fecho_filter(fecho):
             msgfrom, addr = points.check_point(pauth)
             if addr:
