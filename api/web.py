@@ -320,18 +320,19 @@ def subscription():
     return template("tpl/subscription.tpl", nodename=api.nodename, dsc=api.nodedsc, echoareas=echoareas, subscription=subscription, background=api.background)
 
 @route("/s/filelist")
-def filelist():
+@route("/s/filelist/<d>")
+def filelist(d = False):
     auth = request.get_cookie("authstr")
     msgfrom, addr = points.check_point(auth)
-    files = api.get_public_file_index()
+    files = api.get_public_file_index(d)
     if not addr:
-        return template("tpl/filelist.tpl", nodename=api.nodename, dsc=api.nodedsc, files=sorted(files), auth=False, background=api.background)
-    files = files + api.get_file_index()
+        return template("tpl/filelist.tpl", nodename=api.nodename, dsc=api.nodedsc, files=sorted(files), auth=False, background=api.background, d=d)
+    files = files + api.get_file_index(d)
     try:
-        files = files + api.get_private_file_index(msgfrom)
+        files = files + api.get_private_file_index(msgfrom, d)
     except:
         None
-    return template("tpl/filelist.tpl", nodename=api.nodename, dsc=api.nodedsc, files=sorted(files), auth=auth, background=api.background)
+    return template("tpl/filelist.tpl", nodename=api.nodename, dsc=api.nodedsc, files=sorted(files), auth=auth, background=api.background, d=d)
 
 @route("/s/download/<filename:path>")
 def download(filename):

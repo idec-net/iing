@@ -262,10 +262,11 @@ def body_render(body):
 def get_file_size(filename):
     return os.stat("files/" + filename).st_size
 
-def get_file_index():
+def get_file_index(d):
     result = []
     files = codecs.open("files/indexes/files.txt", "r", "utf8").read().split("\n")
     fechoes = []
+    dirs = []
     for f in files:
         if len(f) > 0:
             fi = f.split(":")
@@ -273,12 +274,20 @@ def get_file_index():
                 size = str(get_file_size(fi[0]))
             except:
                 size = "0"
-            result.append([fi[0], size, " ".join(fi[1:]) + "\n"])
+            ff = fi[0].split("/")
+            if d:
+                if ff[0] == d:
+                    result.append([ff[1], ff[0], size, " ".join(fi[1:]) + "\n"])
+            else:
+                if not ff[0] in dirs:
+                    dirs.append(ff[0])
+                    result.append([ff[0] + "/", "", False, ""])
     return result
 
-def get_public_file_index():
+def get_public_file_index(d):
     result = []
     files = codecs.open("files/indexes/public_files.txt", "r", "utf8").read().split("\n")
+    dirs = []
     for f in files:
         if len(f) > 0:
             fi = f.split(":")
@@ -286,10 +295,17 @@ def get_public_file_index():
                 size = str(get_file_size(fi[0]))
             except:
                 size = "0"
-            result.append([fi[0], size, " ".join(fi[1:]) + "\n"])
+            ff = fi[0].split("/")
+            if d:
+                if ff[0] == d:
+                    result.append([ff[1], ff[0], size, " ".join(fi[1:]) + "\n"])
+            else:
+                if not ff[0] in dirs:
+                    dirs.append(ff[0])
+                    result.append([ff[0] + "/", "", False, ""])
     return result
 
-def get_private_file_index(username):
+def get_private_file_index(username, d):
     result = []
     files = codecs.open("files/indexes/" + username + "_files.txt", "r", "utf8").read().split("\n")
     for f in files:

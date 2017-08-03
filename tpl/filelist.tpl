@@ -15,13 +15,21 @@
 
 <div id="conferences" class="width90 files">
 <table border="0" cellpadding="0" cellspacing="0" id="filelist">
+%if d:
+<tr><td><a href="/s/filelist">../</a></td><td></td><td></td></tr>
+%end
 %for file in files:
 <tr>
 <td>
-<a href="/s/download/{{file[0]}}">{{file[0]}}</a>
+%if file[0].endswith("/"):
+<a href="/s/filelist/{{file[0].replace("/", "")}}">{{file[0]}}</a>
+%else:
+<a href="/s/download/{{file[1]}}/{{file[0]}}">{{file[0]}}</a>
+%end
 </td>
 <td>
-%size = int(file[1])
+%if file[2]:
+%size = int(file[2])
 %if size < 1024:
 %    size = str(size) + " B"
 %else:
@@ -29,8 +37,9 @@
 %end
 {{size}}
 </td>
+%end
 <td>
-{{file[2]}}
+{{file[3]}}
 </td>
 </tr>
 %end
@@ -38,18 +47,23 @@
 </div>
 
 <div id="conferences" class="mfiles">
-ВНИМАНИЕ! Не передавайте никому ссылки с этой страницы. В них может содержаться ваш authkey.<br>
 <table border="0" cellpadding="0" cellspacing="0" id="filelist">
+%if d:
+<tr><td><a href="/s/filelist">../</a></td><td></td></tr>
+%end
 %for file in files:
 <tr>
 <td>
-<a href="/s/download/{{file[0]}}">
-{{file[0]}}
-</a><br>
-{{file[2]}}
+%if file[0].endswith("/"):
+<a href="/s/filelist/{{file[0].replace("/", "")}}">{{file[0]}}</a>
+%else:
+<a href="/s/download/{{file[1]}}/{{file[0]}}">{{file[0]}}</a><br>
+{{file[3]}}
+%end
 </td>
 <td>
-%size = int(file[1])
+%if file[2]:
+%size = int(file[2])
 %if size < 1024:
 %    size = str(size) + " B"
 %else:
@@ -57,6 +71,7 @@
 %end
 {{size}}
 </td>
+%end
 </tr>
 </a>
 %end
