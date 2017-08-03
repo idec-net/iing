@@ -1,6 +1,11 @@
 %import os
 %include tpl/header.tpl nodename=nodename, dsc=dsc, background=background
 
+<div id="bottom-buttons">
+<a href="/" title="Главная"><i class="fa fa-home fa-2x bbutton"></i></a>
+<i class="fa fa-arrow-circle-up fa-2x bbutton" onclick="document.body.scrollTop = document.documentElement.scrollTop = 0;" title="Наверх"></i>
+</div>
+
 <div id="panel">
 <div id="buttons">
 <a href="/" class="button"><i class="fa fa-home"></i><span class="caption"> Главная</span></a>

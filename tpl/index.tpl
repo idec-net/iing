@@ -25,6 +25,11 @@
   };
 </script>
 
+<div id="bottom-buttons">
+<a href="/" title="Главная"><i class="fa fa-home fa-2x bbutton"></i></a>
+<i class="fa fa-arrow-circle-up fa-2x bbutton" onclick="document.body.scrollTop = document.documentElement.scrollTop = 0;" title="Наверх"></i>
+</div>
+
 <div id="panel">
 <span id="container"><h3 id="nodedsc"><a href="/"><img src="/lib/idec_grey.png" width="20"> {{dsc}}</a></h3></span>
 <a href="/echolist" id="echolist-button" class="button"><i class="fa fa-bars"></i></a>

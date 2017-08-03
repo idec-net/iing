@@ -416,13 +416,26 @@ textarea {
     font-weight: bold;
 }
 
-.ontop {
-    color: #43ac6a;
+#bottom-buttons {
+    border: 1px solid #585858;
     position: fixed;
-    left: 0;
+    right: 0;
     bottom: 0;
-    opacity: 0.5;
     display: none;
+    font-size: 0;
+}
+
+.bbutton {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #000000;
+    text-decoration: none;
+    padding: 5px 5px;
+    opacity: 0.8;
+    font-size: 18pt;
+}
+
+.bbutton:hover {
+    opacity: 1;
 }
 
 @media all and (max-width: 600px) {
@@ -456,9 +469,6 @@ textarea {
     .login {
 	min-width: 150px;
 	max-width: 350px;
-    }
-    .up-button {
-	display: block;
     }
     .files {
 	display: none;
