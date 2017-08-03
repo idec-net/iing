@@ -279,9 +279,12 @@ def get_file_index(d):
                 if ff[0] == d:
                     result.append([ff[1], ff[0], size, " ".join(fi[1:]) + "\n"])
             else:
-                if not ff[0] in dirs:
-                    dirs.append(ff[0])
-                    result.append([ff[0] + "/", "", False, ""])
+                if len(ff) > 1:
+                    if not ff[0] in dirs:
+                        dirs.append(ff[0])
+                        result.append([ff[0] + "/", "", False, ""])
+                else:
+                    result.append([ff[0], "", size, " ".join(fi[1:]) + "\n"])
     return result
 
 def get_public_file_index(d):
@@ -300,14 +303,18 @@ def get_public_file_index(d):
                 if ff[0] == d:
                     result.append([ff[1], ff[0], size, " ".join(fi[1:]) + "\n"])
             else:
-                if not ff[0] in dirs:
-                    dirs.append(ff[0])
-                    result.append([ff[0] + "/", "", False, ""])
+                if len(ff) > 1:
+                    if not ff[0] in dirs:
+                        dirs.append(ff[0])
+                        result.append([ff[0] + "/", "", False, ""])
+                else:
+                    result.append([ff[0], "", size, " ".join(fi[1:]) + "\n"])
     return result
 
 def get_private_file_index(username, d):
     result = []
     files = codecs.open("files/indexes/" + username + "_files.txt", "r", "utf8").read().split("\n")
+    dirs = []
     for f in files:
         if len(f) > 0:
             fi = f.split(":")
@@ -315,7 +322,17 @@ def get_private_file_index(username, d):
                 size = str(get_file_size(fi[0]))
             except:
                 size = "0"
-            result.append([fi[0], size, " ".join(fi[1:]) + "\n"])
+            ff = fi[0].split("/")
+            if d:
+                if ff[0] == d:
+                    result.append([ff[1], ff[0], size, " ".join(fi[1:]) + "\n"])
+            else:
+                if len(ff) > 1:
+                    if not ff[0] in dirs:
+                        dirs.append(ff[0])
+                        result.append([ff[0] + "/", "", False, ""])
+                else:
+                    result.append([ff[0], "", size, " ".join(fi[1:]) + "\n"])
     return result
 
 def get_fechoarea(fechoarea):

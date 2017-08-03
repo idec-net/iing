@@ -78,4 +78,6 @@
 </table>
 </div>
 
+<br><br>
+
 %include tpl/footer.tpl
