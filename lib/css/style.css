@@ -123,10 +123,6 @@ a {
     text-align: left;
 }
 
-.current-message {
-    border: 2px solid #ec5840;
-}
-
 .message {
     width: 90%;
     max-width: 700px;

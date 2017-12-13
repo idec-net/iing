@@ -19,15 +19,16 @@ def echoes(subscription):
             new = int(api.get_echoarea_count(echoarea[0])) - echoarea_msglist.index(current) - 1
         else:
             new = 0
-
         if new > 0:
-            last = echoarea_msglist[-new];
+            last = echoarea_msglist[-new]
         else:
-            last = echoarea_msglist[-1];
-
+            if len(echoarea_msglist) > 0:
+                last = echoarea_msglist[-1]
+            else:
+                last = api.get_last_msgid(echoarea[0])
         temp.append(new)
         temp.append(last)
-        if len(last) > 0:
+        if last and len(last) > 0:
             temp.append(get_page(api.get_echoarea(echoarea[0]).index(last)))
         else:
             temp.append(get_page(len(api.get_echoarea(echoarea[0]))))
@@ -64,7 +65,7 @@ def index():
             last = False
         if not last or len(last) == 0:
             last = api.get_last_msgid(echoarea[0])
-        if len(last) > 0:
+        if last and len(last) > 0:
             page = get_page(api.get_echoarea(echoarea[0]).index(last))
         else:
             page = get_page(len(api.get_echoarea(echoarea[0])))
@@ -149,38 +150,23 @@ def ffeed(echoarea, msgid, page):
     return template("tpl/feed.tpl", nodename=api.nodename, dsc=api.nodedsc, echoarea=ea, page=page, msgs=result, msgid=msgid, background=api.background, auth=auth)
 
 @route("/<e1>.<e2>")
-@route("/<e1>.<e2>/<page>")
-@route("/<e1>.<e2>/<page>/<msgid>")
-def echoreas(e1, e2, msgid=False, page=False):
+def echoreas(e1, e2):
     echoarea=e1 + "." + e2
     if not request.get_cookie(echoarea):
         response.set_cookie(echoarea, api.get_last_msgid(echoarea), max_age=180*24*60*60, secret='some-secret-key')
-    feed = request.get_cookie("feed", secret='some-secret-key')
-    if not feed:
-        feed = 1
-    else:
-        feed = int(feed)
-    last = msgid or request.get_cookie(echoarea, secret='some-secret-key')
-    if not last in api.get_echoarea(echoarea):
-        last = False
-    if not last or len(last) == 0:
+    last = request.get_cookie(echoarea, secret='some-secret-key')
+    if not last:
         last = api.get_last_msgid(echoarea)
     index = api.get_echoarea(echoarea)
-    if feed == 0 and len(index) > 0 and index[-1] != last and last in index:
+    if len(index) > 0 and index[-1] != last and last in index:
         last = index[index.index(last) + 1]
+    else:
+        last = api.get_last_msgid(echoarea)
     if len(index) == 0:
         last = False
     if echoarea != "favicon.ico":
         if last:
-            feed = request.get_cookie("feed", secret='some-secret-key')
-            if not feed:
-                feed = 1
-            else:
-                feed = int(feed)
-            if feed == 0:
-                redirect("/" + last)
-            else:
-                return ffeed(echoarea, last, page)
+            redirect("/" + last)
         else:
             redirect("/new/" + echoarea)
 
@@ -431,4 +417,6 @@ def pcss(filename):
 
 @route("/lib/<filename>")
 def plib(filename):
-    return static_file(filename, root="lib/")
+    response = static_file(filename, root="lib/")
+    response.set_header("Cache-Control", "public, max-age=604800")
+    return response

@@ -137,7 +137,7 @@ def get_last_msgid(echoarea):
     try:
         return c.execute("SELECT msgid FROM msg WHERE echoarea = ? ORDER BY id DESC LIMIT 1;", (echoarea,)).fetchone()[0]
     except:
-        return []
+        return False
 
 def delete_msg(msgid):
     c.execute("DELETE FROM msg WHERE msgid = ?", (msgid,))

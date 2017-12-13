@@ -11,14 +11,7 @@
 <div align="left">
 <b>Логин:</b> {{username}}
 <b>Authstr:</b> {{auth}}<br>
-<b>Адрес:</b> {{nodename}}, {{addr}}<br>
-<b>Режим чтения:
-%if feed == 1:
-<a href="/s/feed/0">Лента</a>
-%else:
-<a href="/s/feed/1">Почта</a>
-%end
-<br><br>
+<b>Адрес:</b> {{nodename}}, {{addr}}<br><br>
 <a class="form-button" href="/logout">Выйти</a><br><br>
 </div>
 </div>
