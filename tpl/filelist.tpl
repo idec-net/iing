@@ -10,6 +10,11 @@
 <div id="buttons">
 <a href="/" class="button"><i class="fa fa-home"></i><span class="caption"> Главная</span></a>
 </div>
+%if auth:
+<div id="rbuttons">
+<a href="/s/upload" class="button"><i class="fa fa-upload"></i><span class="caption"> Загрузить</span></a>
+</div>
+%end
 <h3>Список файлов</h3>
 </div><br>
 

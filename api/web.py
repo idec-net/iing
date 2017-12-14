@@ -1,5 +1,6 @@
-import api, points, base64, math
+import api, points, base64, math, codecs
 from api.bottle import *
+from shutil import copyfile
 
 def get_page(n):
     return math.ceil(n / 50)
@@ -15,17 +16,17 @@ def echoes(subscription):
             current = api.get_last_msgid(echoarea[0])
         echoarea_msglist = api.get_echoarea(echoarea[0])
 
-        if len(echoarea_msglist) > 0 and current in echoarea_msglist:
-            new = int(api.get_echoarea_count(echoarea[0])) - echoarea_msglist.index(current) - 1
-        else:
-            new = 0
-        if new > 0:
-            last = echoarea_msglist[-new]
-        else:
-            if len(echoarea_msglist) > 0:
-                last = echoarea_msglist[-1]
+        new = 0
+        last = False
+        if len(echoarea_msglist) > 0:
+            if current in echoarea_msglist:
+                new = int(api.get_echoarea_count(echoarea[0])) - echoarea_msglist.index(current) - 1
+
+            if new > 0:
+                last = echoarea_msglist[-new];
             else:
-                last = api.get_last_msgid(echoarea[0])
+                last = echoarea_msglist[-1];
+
         temp.append(new)
         temp.append(last)
         if last and len(last) > 0:
@@ -150,23 +151,38 @@ def ffeed(echoarea, msgid, page):
     return template("tpl/feed.tpl", nodename=api.nodename, dsc=api.nodedsc, echoarea=ea, page=page, msgs=result, msgid=msgid, background=api.background, auth=auth)
 
 @route("/<e1>.<e2>")
-def echoreas(e1, e2):
+@route("/<e1>.<e2>/<page>")
+@route("/<e1>.<e2>/<page>/<msgid>")
+def echoreas(e1, e2, msgid=False, page=False):
     echoarea=e1 + "." + e2
     if not request.get_cookie(echoarea):
         response.set_cookie(echoarea, api.get_last_msgid(echoarea), max_age=180*24*60*60, secret='some-secret-key')
-    last = request.get_cookie(echoarea, secret='some-secret-key')
-    if not last:
+    feed = request.get_cookie("feed", secret='some-secret-key')
+    if not feed:
+        feed = 1
+    else:
+        feed = int(feed)
+    last = msgid or request.get_cookie(echoarea, secret='some-secret-key')
+    if not last in api.get_echoarea(echoarea):
+        last = False
+    if not last or len(last) == 0:
         last = api.get_last_msgid(echoarea)
     index = api.get_echoarea(echoarea)
-    if len(index) > 0 and index[-1] != last and last in index:
+    if feed == 0 and len(index) > 0 and index[-1] != last and last in index:
         last = index[index.index(last) + 1]
-    else:
-        last = api.get_last_msgid(echoarea)
     if len(index) == 0:
         last = False
     if echoarea != "favicon.ico":
         if last:
-            redirect("/" + last)
+            feed = request.get_cookie("feed", secret='some-secret-key')
+            if not feed:
+                feed = 1
+            else:
+                feed = int(feed)
+            if feed == 0:
+                redirect("/" + last)
+            else:
+                return ffeed(echoarea, last, page)
         else:
             redirect("/new/" + echoarea)
 
@@ -234,7 +250,11 @@ def msg_list(echoarea, page=False, msgid=False):
             result.append({"msgid": mid, "subject": subject, "from": f, "to": t})
         except:
             None
-    ea = [ea for ea in api.echoareas if ea[0] == echoarea][0]
+    ea = [ea for ea in api.echoareas if ea[0] == echoarea]
+    if len(ea) == 0:
+        ea = [echoarea, '']
+    else:
+        ea = ea[0]
     if not page:
         if not msgid:
             page = get_page(len(msglist))
@@ -281,6 +301,71 @@ def save_messsage(echoarea, msgid = False):
                 redirect("/%s" % message[7:])
         else:
             redirect("/")
+
+@post("/a/savefile")
+def savefile():
+    auth = request.get_cookie("authstr")
+    username, addr = points.check_point(auth)
+    if addr:
+        dest = request.forms.get("dest")
+        fileecho = request.forms.get("fileecho")
+        tfileecho = request.forms.get("tfileecho")
+        f = request.files.get("file")
+        dsc = request.forms.get("dsc")
+        if fileecho == "":
+            fecho = tfileecho
+        else:
+            fecho = fileecho
+        path = "files/" + fecho
+        if not api.file_filter(f.raw_filename):
+            return template("tpl/upload_message.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, message="Некорректное имя файла")
+        if api.fecho_filter(fecho):
+            f.save("temp")
+            if not os.path.exists("files/%s" % fecho):
+                os.makedirs("files/%s" % fecho)
+            hsh = api.fhsh(open("./temp", "rb").read())
+            hshs = []
+            try:
+                for row in open("fecho/%s" % fecho, "r").read().split("\n"):
+                    hshs.append(row.split(":")[0])
+            except:
+                None
+            blacklist = open("fblacklist.txt", "r").read().split("\n")
+            if not hsh in hshs and not hsh in blacklist:
+                name = f.raw_filename
+                while os.path.exists("files/%s/%s" % (fecho, name)):
+                    tmp = name.split(".")
+                    name = ".".join(tmp[:-1])
+                    suffix = name.split("_")[-1]
+                    if suffix == name:
+                        suffix = "0"
+                    try:
+                        s = int(suffix)
+                        s += 1
+                        post = "_" + str(s)
+                    except:
+                        post = "_1"
+                    if suffix != "0":
+                        Name = name.replace("_" + suffix, post) + "." + tmp[-1]
+                    else:
+                        name = name + post + "." + tmp[-1]
+                try:
+                    size = str(os.stat("temp").st_size)
+                except:
+                    size = "0"
+                copyfile("temp", "files/%s/%s" % (fecho, name))
+                os.remove("temp")
+                codecs.open("fecho/%s" % fecho, "a", "utf8").write("%s:%s:%s:%s,%s:%s\n" % (hsh, name, size, api.nodename, addr, dsc.replace("\n", " ").replace("\r", "")))
+                codecs.open("files/indexes/files.txt", "a", "utf8").write("%s/%s:%s\n" % (fecho, name, dsc.replace("\n", " ").replace("\r", "")))
+                return template("tpl/upload_message.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, message="Файл успешно загружен")
+            else:
+                os.remove("./temp")
+                return template("tpl/upload_message.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, message="Такой файл уже существует")
+            os.remove("./temp")
+        else:
+            return template("tpl/upload_message.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, message="Некорректное имя файлэхоконференции")
+    else:
+        redirect("/")
 
 @post("/s/subscription")
 @route("/s/subscription")
@@ -397,6 +482,15 @@ def registration():
     else:
         redirect("/")
 
+@route("/s/upload")
+def upload_form():
+    auth = request.get_cookie("authstr")
+    username, addr = points.check_point(auth)
+    if addr:
+        return template("tpl/upload.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, fechoareas=api.fechoareas)
+    else:
+        redirect("/")
+
 @route("/rss/<echoarea>")
 def rss(echoarea):
     response.set_header("content-type", "application/rss+xml; charset=utf-8")
@@ -417,6 +511,4 @@ def pcss(filename):
 
 @route("/lib/<filename>")
 def plib(filename):
-    response = static_file(filename, root="lib/")
-    response.set_header("Cache-Control", "public, max-age=604800")
-    return response
+    return static_file(filename, root="lib/")
