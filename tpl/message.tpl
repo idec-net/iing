@@ -13,15 +13,9 @@
 <a href="/" class="button"><i class="fa fa-home"></i><span class="caption"> Главная</span></a>
 <a href="/echolist" id="echolist-button" class="button"><i class="fa fa-bars"></i></a>
 </div>
-%if feed == 1:
-<a href="/{{echoarea[0]}}/{{page}}/{{msgid}}#{{msgid}}"><h3><i class="fa fa-comments"></i><span class="caption"> {{echoarea[0]}}: {{echoarea[1]}}</span></h3></a>
-%else:
 <h3><span class="caption"><i class="fa fa-comments"></i> {{echoarea[0]}}: {{echoarea[1]}}</span></h3>
-%end
 <div id="rbuttons">
-%if feed == 0:
 <a href="/rss/{{echoarea[0]}}" class="button"><i class="fa fa-rss"></i><span class="caption"> RSS</span></a>
-%end
 <a href="/new/{{echoarea[0]}}" class="button"><i class="fa fa-plus-circle"></i><span class="caption"> Новое</span></a>
 <a href="/msglist/{{echoarea[0]}}/{{msgid}}" class="button"><i class="fa fa-list"></i><span class="caption"> Список</span></a>
 </div>

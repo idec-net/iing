@@ -74,12 +74,7 @@ def index():
     allechoareas = echoes(subscription)
     auth = request.get_cookie("authstr")
     msgfrom, addr = points.check_point(auth)
-    feed = request.get_cookie("feed", secret='some-secret-key')
-    if not feed:
-        feed = 1
-    else:
-        feed = int(feed)
-    return template("tpl/index.tpl", nodename=api.nodename, dsc=api.nodedsc, echoareas=echoareas, allechoareas=allechoareas, addr=addr, auth=auth, background=api.background, nosubscription=api.nosubscription, feed=feed)
+    return template("tpl/index.tpl", nodename=api.nodename, dsc=api.nodedsc, echoareas=echoareas, allechoareas=allechoareas, addr=addr, auth=auth, background=api.background, nosubscription=api.nosubscription)
 
 @route("/echolist")
 def echolist():
@@ -107,12 +102,7 @@ def echolist():
     allechoareas = echoes(subscription)
     auth = request.get_cookie("authstr")
     msgfrom, addr = points.check_point(auth)
-    feed = request.get_cookie("feed", secret='some-secret-key')
-    if not feed:
-        feed = 1
-    else:
-        feed = int(feed)
-    return template("tpl/echolist.tpl", nodename=api.nodename, dsc=api.nodedsc, allechoareas=allechoareas, addr=addr, auth=auth, background=api.background, nosubscription=api.nosubscription, feed=feed)
+    return template("tpl/echolist.tpl", nodename=api.nodename, dsc=api.nodedsc, allechoareas=allechoareas, addr=addr, auth=auth, background=api.background, nosubscription=api.nosubscription)
 
 def ffeed(echoarea, msgid, page):
     api.load_config()
@@ -157,32 +147,19 @@ def echoreas(e1, e2, msgid=False, page=False):
     echoarea=e1 + "." + e2
     if not request.get_cookie(echoarea):
         response.set_cookie(echoarea, api.get_last_msgid(echoarea), max_age=180*24*60*60, secret='some-secret-key')
-    feed = request.get_cookie("feed", secret='some-secret-key')
-    if not feed:
-        feed = 1
-    else:
-        feed = int(feed)
     last = msgid or request.get_cookie(echoarea, secret='some-secret-key')
     if not last in api.get_echoarea(echoarea):
         last = False
     if not last or len(last) == 0:
         last = api.get_last_msgid(echoarea)
     index = api.get_echoarea(echoarea)
-    if feed == 0 and len(index) > 0 and index[-1] != last and last in index:
+    if len(index) > 0 and index[-1] != last and last in index:
         last = index[index.index(last) + 1]
     if len(index) == 0:
         last = False
     if echoarea != "favicon.ico":
         if last:
-            feed = request.get_cookie("feed", secret='some-secret-key')
-            if not feed:
-                feed = 1
-            else:
-                feed = int(feed)
-            if feed == 0:
-                redirect("/" + last)
-            else:
-                return ffeed(echoarea, last, page)
+            redirect("/" + last)
         else:
             redirect("/new/" + echoarea)
 
@@ -216,19 +193,7 @@ def showmsg(msgid):
             current = index.index(msgid)
             response.set_cookie(echoarea[0], msgid, max_age=180*24*60*60, secret='some-secret-key')
             auth = request.get_cookie("authstr")
-            feed = request.get_cookie("feed", secret='some-secret-key')
-            if not feed:
-                feed = 1
-            else:
-                feed = int(feed)
-            if feed == 1:
-                try:
-                    page = get_page(api.get_echoarea(echoarea[0]).index(msgid))
-                except:
-                    page = get_page(api.get_echoarea_count(echoarea[0]))
-            else:
-                page = False
-            return template("tpl/message.tpl", nodename=api.nodename, echoarea=echoarea, index=index, msgid=msgid, repto=repto, current=current, time=t, point=point, address=address, to=to, subj=subj, body=body, msgfrom=msgfrom, background=api.background, auth=auth, feed=feed, page=page)
+            return template("tpl/message.tpl", nodename=api.nodename, echoarea=echoarea, index=index, msgid=msgid, repto=repto, current=current, time=t, point=point, address=address, to=to, subj=subj, body=body, msgfrom=msgfrom, background=api.background, auth=auth)
         else:
             redirect("/")
     else:
@@ -429,11 +394,6 @@ def blacklist(msgid):
             open("blacklist.txt", "a").write(msgid + "\n")
     redirect("/")
 
-@route("/s/feed/<feed>")
-def sfeed(feed):
-    response.set_cookie("feed", feed, path="/", max_age=3600000000, secret='some-secret-key')
-    redirect("/profile")
-
 @route("/login")
 @post("/login")
 def login():
@@ -452,12 +412,7 @@ def login():
 def profile():
     auth = request.get_cookie("authstr")
     username, addr = points.check_point(auth)
-    feed = request.get_cookie("feed", secret='some-secret-key')
-    if not feed:
-        feed = 1
-    else:
-        feed = int(feed)
-    return template("tpl/profile.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, username=username, auth=auth, addr=addr, feed=feed)
+    return template("tpl/profile.tpl", nodename=api.nodename, dsc=api.nodedsc, background=api.background, username=username, auth=auth, addr=addr)
 
 @route("/logout")
 def logout():
